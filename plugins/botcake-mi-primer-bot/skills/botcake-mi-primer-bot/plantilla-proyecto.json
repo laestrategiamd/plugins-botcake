@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "creado": "",
+  "actualizado": "",
+  "fase_actual": 0,
+  "tanda_actual": 1,
+  "requisitos": {
+    "cuenta_pancake": null,
+    "pagina_conectada": null,
+    "canal": "",
+    "nombre_pagina": "",
+    "page_id": "",
+    "permisos_admin": null,
+    "billetera_pancake": null,
+    "nodejs": null
+  },
+  "negocio": {
+    "nombre": "",
+    "rubro": "",
+    "ciudad_pais": "",
+    "local_fisico": "",
+    "horario_atencion": "",
+    "fuera_de_horario": ""
+  },
+  "oferta": {
+    "productos": [],
+    "producto_estrella": "",
+    "no_vende": [],
+    "promocion_vigente": "",
+    "promocion_vence": "",
+    "como_se_cotiza": "",
+    "catalogo_en_pos": null
+  },
+  "logistica": {
+    "envios": "",
+    "cobertura": "",
+    "tiempo_entrega": "",
+    "costo_envio": "",
+    "formas_de_pago": [],
+    "devoluciones": "",
+    "garantia": ""
+  },
+  "alcance": {
+    "objetivo": [],
+    "medida_de_exito": "",
+    "no_hace": [],
+    "descuentos": "",
+    "promete_fechas": null,
+    "temas_prohibidos": []
+  },
+  "escalado": {
+    "cuando_pasa_a_persona": [],
+    "mensaje_de_traspaso": "",
+    "fuera_de_horario": ""
+  },
+  "estilo": {
+    "datos_a_capturar": [],
+    "trato": "",
+    "emojis": "",
+    "largo_mensajes": "",
+    "palabras_prohibidas": [],
+    "nombre_del_bot": "",
+    "ejemplo_conversacion": ""
+  },
+  "pendientes": [],
+  "artefactos": {
+    "diagrama": "",
+    "prompt": "",
+    "base_conocimiento": "",
+    "flujo_json": ""
+  },
+  "flujo": {
+    "nombre": "",
+    "ramas": [
+      {
+        "frase": "PASAR A ASESOR",
+        "etiqueta": "Asesor",
+        "color": "#e74c3c",
+        "apaga_agente": true,
+        "mensaje": "En un momento te escribe alguien del equipo."
+      },
+      {
+        "frase": "LEAD COMPLETO",
+        "etiqueta": "Lead",
+        "color": "#27ae60",
+        "apaga_agente": false,
+        "mensaje": ""
+      }
+    ]
+  },
+  "montaje": {
+    "etiquetas": [],
+    "campos": [],
+    "agente_id": "",
+    "prompt_pegado": null,
+    "kb_subida": null,
+    "flujo_id": "",
+    "punto_de_entrada": null,
+    "encendido": false
+  },
+  "pruebas": {
+    "preguntas": [],
+    "resultados": [],
+    "aprobado_por_usuario": false
+  }
+}

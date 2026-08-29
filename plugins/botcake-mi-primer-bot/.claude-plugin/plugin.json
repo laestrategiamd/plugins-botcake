@@ -1,0 +1,15 @@
+{
+  "name": "botcake-mi-primer-bot",
+  "displayName": "Mi primer bot en Botcake",
+  "version": "0.1.0",
+  "description": "Asistente guiado para construir, montar y encender un agente de IA en Botcake (ecosistema Pancake).",
+  "author": {
+    "name": "Luis Manuel Diaz",
+    "email": "luismanuel@laestrategia.agency",
+    "url": "https://laestrategia.agency"
+  },
+  "homepage": "https://github.com/laestrategia/plugins-botcake",
+  "repository": "https://github.com/laestrategia/plugins-botcake",
+  "license": "MIT",
+  "keywords": ["botcake", "pancake", "whatsapp", "bot", "chatbot", "ia", "automatizacion"]
+}
