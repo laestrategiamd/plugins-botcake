@@ -2,12 +2,7 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--user-data-dir",
-        "${HOME}/.botcake-navegador"
-      ]
+      "args": ["-y", "@playwright/mcp@latest"]
     }
   }
 }
