@@ -8,7 +8,7 @@ desde Claude Code.
 En tu terminal, dentro de Claude Code:
 
 ```
-/plugin marketplace add laestrategia/plugins-botcake
+/plugin marketplace add laestrategiamd/plugins-botcake
 ```
 
 ```

@@ -8,8 +8,8 @@
     "email": "luismanuel@laestrategia.agency",
     "url": "https://laestrategia.agency"
   },
-  "homepage": "https://github.com/laestrategia/plugins-botcake",
-  "repository": "https://github.com/laestrategia/plugins-botcake",
+  "homepage": "https://github.com/laestrategiamd/plugins-botcake",
+  "repository": "https://github.com/laestrategiamd/plugins-botcake",
   "license": "MIT",
   "keywords": ["botcake", "pancake", "whatsapp", "bot", "chatbot", "ia", "automatizacion"]
 }
