@@ -52,16 +52,47 @@ el bot se apaga.
 
 Para eso hace falta conectar el punto de entrada. Se hace en dos tiempos:
 
-### Tiempo 1 — Encender solo para una palabra clave
+### Tiempo 1 — Encender solo para una palabra clave (la creas tu con el)
 
-En vez de ponerlo a atender a todo el mundo, se conecta a **una palabra clave** que solo
-conoce el usuario, por ejemplo `PRUEBA123`.
+En vez de ponerlo a atender a todo el mundo, se conecta a **una palabra clave de prueba**.
 
-> Botcake → **Automatizacion** → **Palabras clave** → nueva palabra clave `PRUEBA123` →
-> elegir el flujo `<nombre del flujo>`.
+1. **Genera tu la palabra**: `PRUEBA-` mas 4 digitos al azar (ej. `PRUEBA-4821`). Nunca
+   una palabra que un cliente real pudiera escribir sin querer.
+2. **Mira que hay antes de crear nada**: `python3 scripts/bc.py palabras` lista las
+   palabras clave que ya existen en la pagina. Las que ya estaban son del negocio: no las
+   toques.
+3. **Guia al usuario a crearla** (es un solo recorrido):
+   > Botcake → **Automatizacion** → **Palabras clave** → nueva → escribir la palabra
+   > exacta → elegir el flujo `<nombre del flujo>` → guardar.
+4. **Comprueba por tu lado** con `bc.py palabras` que quedo creada y apuntando al flujo
+   correcto (anota su `id` en `mi-bot.json`: lo necesitas para borrarla al final). No
+   sigas sin esta comprobacion.
 
 Asi el bot solo se activa cuando alguien escribe exactamente esa palabra. Los clientes
 reales siguen sin verlo.
+
+### Protocolo interno de la prueba (NO se lo expliques al usuario)
+
+Reglas para evitar solapamientos y bucles. Aplicalas sin exponer la mecanica: al usuario
+dale solo la instruccion practica que le toque en cada momento.
+
+1. **Un punto de entrada a la vez.** Mientras dura la prueba, el flujo vive SOLO en la
+   palabra clave. La Respuesta predeterminada no se conecta hasta el encendido final.
+2. **Inventario antes de tocar.** Si la pagina ya tiene otro bot atendiendo (otra
+   respuesta predeterminada, otras palabras clave), no los toques ni los apagues: la
+   prueba convive con ellos. Al usuario, solo lo minimo: *"tu pagina ya tiene un bot
+   activo; la prueba no lo afecta"*.
+3. **Durante la prueba nadie responde a mano.** Instruccion simple para el usuario:
+   *"mientras hacemos las 10 preguntas, no contestes tu desde Pancake a ese chat de
+   prueba"*. Una respuesta humana pausa al agente y la prueba da fallos falsos.
+4. **La palabra de prueba SE BORRA al encender.** En el encendido: PRIMERO
+   `python3 scripts/bc.py borrar-palabra <id>` (el comando comprueba solo que
+   desaparecio); DESPUES se conecta la Respuesta predeterminada. Nunca dejes los dos
+   puntos de entrada vivos a la vez: el mismo mensaje dispararia el flujo dos veces.
+5. **Los frenos del bucle ya estan montados y no se quitan**: la puerta de entrada
+   (etiqueta Asesor → no contestar) y el paso Bucle, que espera mensaje del cliente y no
+   se dispara solo. Si el usuario re-escribe la palabra de prueba, el flujo re-entra
+   desde el inicio: es normal, no lo persigas como fallo.
 
 ### Tiempo 2 — Correr las 10 preguntas
 
@@ -83,7 +114,8 @@ solo esa prueba**.
 
 ## El encendido
 
-Cuando el usuario diga que le gusta como responde —y solo entonces— se conecta de verdad:
+Cuando el usuario diga que le gusta como responde —y solo entonces— se conecta de verdad.
+**Primero borra la palabra de prueba** (punto 4 del protocolo interno) y despues:
 
 > Botcake → **Automatizacion** → **Respuesta predeterminada** → elegir el flujo del bot.
 

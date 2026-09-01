@@ -6,6 +6,8 @@
   python3 bc.py crear-campo "Nombre"
   python3 bc.py ver-agente <id>
   python3 bc.py ver-conocimiento <id> "frase que tiene que estar"
+  python3 bc.py palabras
+  python3 bc.py borrar-palabra <id>
 """
 import json, sys, urllib.request
 from _cliente import Botcake
@@ -99,6 +101,22 @@ def main():
         ids = {c.get("name"): c.get("id") for c in bc.campos()}
         print("Campo '%s' -> id %s" % (sys.argv[2], ids.get(sys.argv[2])))
         return 0 if ids.get(sys.argv[2]) else 1
+    if cmd == "palabras":
+        ps = bc.palabras()
+        if not ps:
+            print("No hay palabras clave en esta pagina (o el endpoint devolvio vacio).")
+            return 0
+        for p in ps:
+            print(json.dumps(p, ensure_ascii=False))
+        return 0
+    if cmd == "borrar-palabra":
+        r = bc.borrar_palabra(sys.argv[2])
+        quedan = [p for p in bc.palabras() if str(p.get("id")) == sys.argv[2]]
+        if quedan:
+            print(">>> La palabra clave %s SIGUE existiendo. No se borro." % sys.argv[2])
+            return 1
+        print("Palabra clave %s borrada y comprobada." % sys.argv[2])
+        return 0
     if cmd == "ver-agente":
         return ver_agente(bc, sys.argv[2])
     if cmd == "ver-conocimiento":

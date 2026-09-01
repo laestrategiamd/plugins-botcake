@@ -45,6 +45,9 @@ class Botcake:
     def get(self, path):
         return self._leer(urllib.request.Request(self._url(path), method="GET"))
 
+    def delete(self, path):
+        return self._leer(urllib.request.Request(self._url(path), method="DELETE"))
+
     def post(self, path, fields):
         b = "----bc" + key(10)
         cuerpo = "".join(
@@ -130,6 +133,14 @@ class Botcake:
 
     def agente(self, agente_id):
         return self.get("ai/%s" % agente_id).get("assistant") or {}
+
+    # palabras clave
+    def palabras(self):
+        r = self.get("keywords")
+        return r.get("keywords") or r.get("data") or []
+
+    def borrar_palabra(self, keyword_id):
+        return self.delete("keywords/%s" % keyword_id)
 
     # flujos
     def crear_flujo(self, nombre):
