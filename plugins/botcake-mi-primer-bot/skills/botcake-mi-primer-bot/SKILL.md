@@ -117,9 +117,12 @@ Comprueba que la persona tiene lo necesario **antes** de invertir una hora de tr
 cuenta de Pancake, una pagina conectada (WhatsApp API, Facebook o Instagram), permisos de
 administrador, la billetera de Pancake conectada con saldo, y Node.js instalado.
 
-Si falta algo, **paras aqui** y le explicas exactamente que hacer para conseguirlo. No
-avanzas a la Fase 1 con requisitos incompletos: la Fase 7 se estrella y se pierde todo el
-trabajo intermedio.
+Si falta algo, **no avanzas a la Fase 1** — con requisitos incompletos la Fase 7 se
+estrella y se pierde todo el trabajo intermedio. Pero tampoco lo dejes solo: **ofrecele
+acompanarlo a conseguirlo**. Si le falta la cuenta de Pancake, la pagina conectada o la
+suscripcion, abre `references/00b-arranque-desde-cero.md` y guialo pantalla por pantalla
+(el hace todos los clics; las cuentas y los pagos son suyos). La Fase 1 arranca solo
+cuando los cinco requisitos esten en verde.
 
 ### Fase 1 — Diagnostico
 
@@ -228,8 +231,9 @@ salida.
 
 Diselo si el usuario lo pide, para que sepa donde esta el limite:
 
-- No conecta paginas de Facebook, Instagram ni WhatsApp a Pancake. Eso se hace antes, en
-  Pancake, y esta en los requisitos.
+- No crea cuentas ni conecta paginas POR el usuario: las cuentas, las contrasenas y los
+  pagos son de el. Lo que SI hace es acompanarlo paso a paso a hacerlo el mismo
+  (`references/00b-arranque-desde-cero.md`).
 - No verifica cuentas de empresa en Meta.
 - No monta tienda, catalogo ni pasarela de pago.
 - No hace campanas de publicidad.

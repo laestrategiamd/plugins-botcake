@@ -16,9 +16,11 @@ Preguntaselo todo de una vez, en una sola lista, y que te conteste con si o no.
 del panel tiene que ver el nombre de su pagina de Facebook, su cuenta de Instagram o su
 numero de WhatsApp.
 
-**Si no tiene:** para aqui. Conectar una pagina no es parte de esta skill. Diselo asi:
-*"Necesitas primero conectar tu pagina de Facebook, Instagram o tu WhatsApp a Pancake. Eso
-se hace desde Pancake, en Configuracion, y toma unos minutos. Cuando lo tengas, volvemos."*
+**Si no tiene:** no avances a la Fase 1, pero ofrecele acompanarlo ahora mismo. Diselo asi:
+*"Te falta la cuenta (o conectar tu pagina). Si quieres, te acompano a crearla ya: yo te voy
+diciendo donde hacer clic y tu lo haces todo desde tu navegador."* Si acepta, abre
+`00b-arranque-desde-cero.md` y siguela. Si prefiere hacerlo solo, dile que vuelva cuando
+la tenga.
 
 **Preguntale cual canal va a usar el bot** y anotalo, porque cambia lo que se puede hacer:
 
@@ -51,8 +53,10 @@ aviso de conectar la billetera, no lo esta.
 
 **Si no lo esta:** lo tiene que conectar **el dueno de la cuenta**, porque es un tema de
 facturacion — se le va a cobrar el consumo del bot ahi. No lo hagas tu ni le pidas datos de
-pago. Diselo asi: *"Esto lo tiene que hacer el dueno de la cuenta desde Botcake AI, porque
-implica el cobro del consumo. Cuando este conectado seguimos."*
+pago. Si el dueno es la persona que tienes al frente, los pasos para crear la billetera
+estan en `00b-arranque-desde-cero.md` (bloque 5); si es otra persona, diselo asi: *"Esto lo
+tiene que hacer el dueno de la cuenta desde Botcake AI, porque implica el cobro del
+consumo. Cuando este conectado seguimos."*
 
 ### 4. Node.js instalado
 
