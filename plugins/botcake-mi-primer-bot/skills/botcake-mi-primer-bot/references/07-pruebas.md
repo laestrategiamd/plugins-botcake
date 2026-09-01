@@ -120,5 +120,10 @@ Un resumen corto, en el chat, con:
 
 - Que revisar en una semana: las conversaciones donde se puso la etiqueta `Asesor` (ahi se
   ve que no supo responder) y las preguntas que quedaron sin respuesta.
-- Como actualizar un precio: abrir `conocimiento-<negocio>.txt`, cambiar la linea, y repetir
-  el paso 9 del montaje.
+- Como actualizar un precio o cualquier dato: **que abra Claude Code en la carpeta del
+  proyecto y te lo pida** («cambia el precio de X a Y»). El ciclo completo lo haces TU,
+  no el: corriges `conocimiento-<negocio>.txt`, subes el archivo, **dejas la version
+  nueva conectada al agente** — marcada ella, desmarcada la vieja; recuerda que subir NO
+  reemplaza: quedan los dos — y compruebas con `bc.py ver-conocimiento` que el agente
+  quedo usando la nueva. Si la subida no te funciona por tu lado, guialo con los clics
+  del paso 9 y comprueba igual. Nunca digas "listo" sin la comprobacion.
