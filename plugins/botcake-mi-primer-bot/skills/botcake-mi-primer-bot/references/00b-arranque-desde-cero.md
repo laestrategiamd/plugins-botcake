@@ -1,7 +1,6 @@
 # Arranque desde cero: crear la cuenta y conectar el canal
 
-Usa esta guia cuando en la Fase 0 falte la cuenta de Pancake, la pagina conectada o la
-suscripcion. Sale de la documentacion oficial de Pancake (sintetizada ago-2026).
+Usa esta guia cuando en la Fase 0 falte la cuenta de Pancake o la pagina conectada. Sale de la documentacion oficial de Pancake (sintetizada ago-2026).
 
 **Las reglas de esta guia:**
 
@@ -27,16 +26,20 @@ suscripcion. Sale de la documentacion oficial de Pancake (sintetizada ago-2026).
 4. Como saber que quedo: al terminar ve el **dashboard** de Pancake, con su nombre arriba
    y un boton para conectar plataformas.
 
-## 2. La suscripcion
+## 2. Los 14 dias de prueba
 
-- Una cuenta nueva funciona **en modo de prueba** al principio. Para trabajar en serio se
-  compra una suscripcion, que se elige segun **cuantas paginas, cuanto personal y por
-  cuanto tiempo**.
-- ⚠️ **La pagina tiene que quedar DENTRO del plan.** Pagar no basta: la pagina conectada
-  se vincula a la suscripcion, y una pagina fuera del plan no recibe mensajes. Tras pagar,
-  que compruebe que su pagina aparece activa dentro del plan.
-- **El pago lo hace el usuario solo.** Tu le puedes decir donde esta la pantalla de planes;
-  no le pidas ni el metodo de pago ni ningun dato de la tarjeta.
+- Una cuenta nueva trae **14 dias de prueba gratis**, y con eso alcanza para todo el plan
+  de este plugin: construir el bot, montarlo y probarlo. Diselo asi, en positivo: *"con la
+  prueba gratis de 14 dias tienes de sobra para dejar tu bot funcionando"*.
+- 🔴 **La suscripcion NO es un paso del flujo.** No la menciones por iniciativa propia, no
+  la presentes como requisito y no empujes la compra en ningun momento.
+- **Solo si el usuario PREGUNTA** como activar o comprar la suscripcion, respondele esto:
+  - Se elige segun **cuantas paginas, cuanto personal y por cuanto tiempo**.
+  - ⚠️ **La pagina tiene que quedar DENTRO del plan.** Pagar no basta: una pagina fuera
+    del plan no recibe mensajes. Tras pagar, que compruebe que su pagina aparece activa
+    dentro del plan.
+  - **El pago lo hace el solo.** Tu le puedes decir donde esta la pantalla de planes; no
+    le pidas ni el metodo de pago ni ningun dato de la tarjeta.
 
 ## 3. Conectar el canal
 

@@ -119,8 +119,9 @@ administrador, la billetera de Pancake conectada con saldo, y Node.js instalado.
 
 Si falta algo, **no avanzas a la Fase 1** — con requisitos incompletos la Fase 7 se
 estrella y se pierde todo el trabajo intermedio. Pero tampoco lo dejes solo: **ofrecele
-acompanarlo a conseguirlo**. Si le falta la cuenta de Pancake, la pagina conectada o la
-suscripcion, abre `references/00b-arranque-desde-cero.md` y guialo pantalla por pantalla
+acompanarlo a conseguirlo**. Si le falta la cuenta de Pancake o la pagina
+conectada, abre `references/00b-arranque-desde-cero.md` y guialo pantalla por pantalla
+(una cuenta nueva trae 14 dias de prueba gratis: alcanza para dejar el bot funcionando)
 (el hace todos los clics; las cuentas y los pagos son suyos). La Fase 1 arranca solo
 cuando los cinco requisitos esten en verde.
 

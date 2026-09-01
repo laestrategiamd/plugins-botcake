@@ -1,7 +1,7 @@
 {
   "name": "botcake-mi-primer-bot",
   "displayName": "Mi primer bot en Botcake",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Asistente guiado para construir, montar y encender un agente de IA en Botcake (ecosistema Pancake).",
   "author": {
     "name": "Luis Manuel Diaz",
