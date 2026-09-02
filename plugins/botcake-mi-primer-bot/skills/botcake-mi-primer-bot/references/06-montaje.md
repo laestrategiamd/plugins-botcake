@@ -74,7 +74,13 @@ Si falla, ve a `08-cuando-falla.md`.
 
 ## FASE 7 — El montaje, en orden
 
-El orden importa: cada paso necesita el anterior.
+El orden importa: cada paso necesita el anterior. Casi todo lo haces tu; el usuario solo
+pone las manos en tres momentos: crear el agente vacio, dejar el modo en «Detalle» y
+encender al final.
+
+> 💡 **Haz el prompt y la KB seguidos, y deja el ajuste del modo «Detalle» para despues de
+> los dos.** Cada escritura al agente tumba ese interruptor; arreglarlo una sola vez al
+> final ahorra idas y vueltas.
 
 ### Paso 5 — Las etiquetas `[lo haces tu]`
 
@@ -114,51 +120,58 @@ Guialo pantalla por pantalla:
 Cuando termine, lees el identificador del agente de la direccion de la pantalla
 (`.../agents/<numero>`) y lo guardas en `mi-bot.json`.
 
-### Paso 8 — Pegar el prompt `[lo hace el usuario, tu le indicas]`
-
-**Esto no se puede automatizar.** El campo donde va el prompt es un editor especial que
-rechaza el texto puesto por programa: se ve escrito pero al guardar manda el texto viejo.
-Se pega a mano y son diez segundos.
-
-> 1. Abre el archivo `prompt-<negocio>.txt` que te genere (esta en `<ruta>`).
-> 2. Selecciona todo (Cmd+A o Ctrl+A) y copia (Cmd+C o Ctrl+C).
-> 3. En Botcake, dentro del agente, pestana **Instruccion**. Borra lo que haya.
-> 4. Pega (Cmd+V o Ctrl+V).
-> 5. **Guardar** → 🔴 **sale una ventana que pregunta si estas seguro. Pulsa Confirmar.**
->    Si no la confirmas, no se guarda nada y la pantalla se ve igual.
-
-**Compruebalo tu:**
+### Paso 8 — Escribir el prompt `[lo haces tu]`
 
 ```bash
-python3 scripts/bc.py ver-agente <id>
+python3 scripts/bc.py poner-prompt <id_agente> prompt-<negocio>.txt
 ```
 
-Le ensenas al usuario cuantos caracteres quedaron y las primeras lineas, y le confirmas que
-coincide con el archivo. Si quedo vacio o quedo el texto viejo, se repite el paso.
+Escribe los **dos** campos del prompt (el texto plano y el del editor) y comprueba leyendo
+de vuelta que el numero de caracteres coincide con el archivo. Si se escribiera solo uno,
+el agente seguiria con el prompt viejo y la comprobacion no lo delataria.
 
-### Paso 9 — Subir la base de conocimiento `[lo hace el usuario, tu le indicas]`
+> 🔴 **Escribir por API tumba el interruptor Detalle/Rapido**, aunque no lo toques. Despues
+> del comando, guia al usuario: *abre el agente y deja el modo en «Detalle»*. Se comprueba
+> a ojo, no por API: el campo `type_setting` esta invertido y no sirve para saber el modo.
 
-Este camino tiene tres trampas seguidas. Diselas antes, no despues:
+**Si el comando falla dos veces**, plan B — el pegado a mano (son 10 segundos):
 
-> 1. Dentro del agente, pestana **Conocimiento** → **Anadir archivos**.
-> 2. Boton **Subir** → elige el archivo `conocimiento-<negocio>.txt` (esta en `<ruta>`).
-> 3. Se abre una ventana que dice **Importar datos**. Eso solo lo prepara. Pulsa
->    **Confirmar**.
-> 4. En la lista, **marca la casilla del archivo nuevo**. Si hay uno viejo, desmarcalo.
-> 5. Pulsa **Agregar a la instruccion**.
-> 6. 🔴 **Pulsa Guardar y confirma otra vez.** Entre el paso 5 y el 6 la pantalla ya se ve
->    con el archivo puesto **y todavia no se ha guardado nada**. Si te quedas ahi, el bot no
->    tiene la informacion y parece que si.
+> 1. Abre `prompt-<negocio>.txt`, selecciona todo y copia.
+> 2. En el agente, pestana **Instruccion**. Borra lo que haya y pega.
+> 3. **Guardar** → 🔴 **confirma en la ventana que sale.** Sin ese Confirmar no se guarda
+>    nada y la pantalla se ve igual.
 
-**Compruebalo tu:**
+Y comprueba igual con `bc.py ver-agente <id>`.
+
+### Paso 9 — Subir la base de conocimiento `[lo haces tu]`
 
 ```bash
-python3 scripts/bc.py ver-conocimiento <id>
+python3 scripts/bc.py subir-kb <id_agente> conocimiento-<negocio>.txt "<una frase del archivo>"
 ```
 
-Este comando no mira la pantalla: descarga el archivo que el agente tiene enganchado ahora
-mismo y busca dentro una frase que tu elijas de la base de conocimiento. Si la encuentra,
-entro de verdad.
+Sube el archivo y lo adjunta al agente en un solo guardado. Espera 6 segundos y comprueba
+lo unico que importa: que la ficha del archivo traiga **`openai_file_id` y
+`cake_ai_file_id`**. Sin esos dos identificadores el archivo esta en la biblioteca pero el
+bot NO lo lee.
+
+> ⚠️ **`meta_data.bytes` se queda en 0 aunque el archivo este indexado**: no lo uses como
+> senal de nada. Los dos ids son la senal buena.
+
+**Al reemplazar una KB** (mantenimiento, no primer montaje): adjunta la nueva **junto a la
+vieja**, comprueba que la nueva trae sus ids, y **en un segundo guardado quita la vieja**.
+Nunca al reves: si quitas primero, el agente se queda sin conocimiento entre los dos pasos.
+No hay forma de borrar un archivo de la biblioteca de la pagina; solo se desadjunta del
+agente.
+
+**Si el comando falla dos veces**, plan B por la interfaz:
+
+> Conocimiento → **Anadir archivos** → Subir → **Confirmar** → marcar el archivo nuevo y
+> desmarcar el viejo → **Agregar a la instruccion** → **Guardar → Confirmar**.
+> 🔴 Entre marcar y Guardar la pantalla ya se ve con el archivo puesto **y no se ha guardado
+> nada**.
+
+Comprueba igual con `bc.py ver-conocimiento <id> "<frase>"`, que descarga el archivo que el
+agente tiene puesto ahora mismo y busca la frase dentro.
 
 ### Paso 10 — Los ajustes que casi nadie toca `[lo hace el usuario, tu le indicas]`
 

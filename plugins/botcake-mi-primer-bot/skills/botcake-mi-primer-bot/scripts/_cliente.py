@@ -70,6 +70,31 @@ class Botcake:
             headers={"Content-Type": "multipart/form-data; boundary=%s" % b})
         return self._leer(req)
 
+    def _cuerpo(self, b, campos, archivo=None):
+        partes = []
+        for n, v in campos:
+            partes.append(('--%s\r\nContent-Disposition: form-data; name="%s"\r\n\r\n%s\r\n'
+                           % (b, n, v)).encode("utf-8"))
+        if archivo:
+            nombre, datos, tipo = archivo
+            partes.append(('--%s\r\nContent-Disposition: form-data; name="file"; filename="%s"\r\n'
+                           'Content-Type: %s\r\n\r\n' % (b, nombre, tipo)).encode("utf-8"))
+            partes.append(datos)
+            partes.append(b"\r\n")
+        partes.append(("--%s--\r\n" % b).encode("utf-8"))
+        return b"".join(partes)
+
+    def post_archivo(self, path, ruta_archivo, campos=()):
+        import os as _os
+        b = "----bc" + key(10)
+        with open(ruta_archivo, "rb") as fh:
+            datos = fh.read()
+        cuerpo = self._cuerpo(b, list(campos), (_os.path.basename(ruta_archivo), datos, "text/plain"))
+        req = urllib.request.Request(
+            self._url(path), data=cuerpo, method="POST",
+            headers={"Content-Type": "multipart/form-data; boundary=%s" % b})
+        return self._leer(req)
+
     # etiquetas
     def etiquetas(self):
         return self.get("tags").get("tags", []) or []
@@ -141,6 +166,40 @@ class Botcake:
 
     def borrar_palabra(self, keyword_id):
         return self.delete("keywords/%s" % keyword_id)
+
+    def guardar_agente(self, agente_id, objeto):
+        return self.put("ai/%s" % agente_id,
+                        [("changes", json.dumps(objeto, ensure_ascii=False))])
+
+    def poner_prompt(self, agente_id, texto):
+        a = self.agente(agente_id)
+        if not a:
+            raise SystemExit("No encontre el agente %s." % agente_id)
+        ins = a.setdefault("instructions", {})
+        ins["general_prompt"] = texto
+        ins["slate_general_prompt"] = [
+            {"type": "paragraph", "children": [{"text": l}]} for l in texto.split("\n")]
+        self.guardar_agente(agente_id, a)
+        return len((self.agente(agente_id).get("instructions") or {}).get("general_prompt") or "")
+
+    def adjuntar_kb(self, agente_id, ruta, quitar_viejas=False):
+        r = self.post_archivo("ai/file", ruta)
+        nuevo = r.get("file") or r.get("data") or r
+        if not isinstance(nuevo, dict) or not nuevo.get("id"):
+            raise SystemExit("No se pudo subir el archivo: %s" % json.dumps(r)[:300])
+        a = self.agente(agente_id)
+        libreria = list(a.get("files_library") or [])
+        libreria = [x for x in libreria if x.get("id") != nuevo["id"]] + [nuevo]
+        a["files_library"] = libreria
+        self.guardar_agente(agente_id, a)
+        return nuevo["id"]
+
+    def quitar_kb(self, agente_id, dejar_solo_id):
+        a = self.agente(agente_id)
+        a["files_library"] = [x for x in (a.get("files_library") or [])
+                              if x.get("id") == dejar_solo_id]
+        self.guardar_agente(agente_id, a)
+        return len(a["files_library"])
 
     # flujos
     def crear_flujo(self, nombre):

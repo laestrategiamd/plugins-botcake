@@ -8,6 +8,8 @@
   python3 bc.py ver-conocimiento <id> "frase que tiene que estar"
   python3 bc.py palabras
   python3 bc.py borrar-palabra <id>
+  python3 bc.py poner-prompt <agente_id> <archivo.txt>
+  python3 bc.py subir-kb <agente_id> <archivo.txt> "frase que tiene que estar"
 """
 import json, sys, urllib.request
 from _cliente import Botcake
@@ -116,6 +118,40 @@ def main():
             print(">>> La palabra clave %s SIGUE existiendo. No se borro." % sys.argv[2])
             return 1
         print("Palabra clave %s borrada y comprobada." % sys.argv[2])
+        return 0
+    if cmd == "poner-prompt":
+        texto = open(sys.argv[3], encoding="utf-8").read()
+        n = bc.poner_prompt(sys.argv[2], texto)
+        esperado = len(texto)
+        print("Prompt escrito. Caracteres en el archivo: %d | en el agente: %d" % (esperado, n))
+        if abs(n - esperado) > 5:
+            print(">>> NO coincide. El prompt no quedo bien. Revisar 08-cuando-falla.md")
+            return 1
+        print("Coincide.")
+        print(">>> AHORA, EN LA INTERFAZ: abre el agente y deja el modo en «Detalle».")
+        print("    Escribir por API tumba ese interruptor aunque no se toque.")
+        return 0
+    if cmd == "subir-kb":
+        import time
+        nuevo_id = bc.adjuntar_kb(sys.argv[2], sys.argv[3])
+        time.sleep(6)
+        a = bc.agente(sys.argv[2])
+        ficha = next((x for x in (a.get("files_library") or []) if x.get("id") == nuevo_id), None)
+        if not ficha:
+            print(">>> El archivo no quedo adjunto al agente.")
+            return 1
+        indexado = bool(ficha.get("openai_file_id") and ficha.get("cake_ai_file_id"))
+        print("Archivo adjunto: %s" % ficha.get("name"))
+        print("Indexado (openai_file_id + cake_ai_file_id): %s" % ("SI" if indexado else "NO"))
+        if not indexado:
+            print(">>> Sin esos dos ids el bot NO lee el archivo. Espera 10s y repite,")
+            print("    o adjuntalo por la interfaz (Conocimiento -> Guardar -> Confirmar).")
+            return 1
+        if len(sys.argv) > 4:
+            r = ver_conocimiento(bc, sys.argv[2], sys.argv[4])
+            if r:
+                return r
+        print("\nPara dejar SOLO esta version, quita las viejas con un segundo guardado.")
         return 0
     if cmd == "ver-agente":
         return ver_agente(bc, sys.argv[2])
