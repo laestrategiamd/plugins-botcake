@@ -115,7 +115,10 @@ Estas reglas son parte del trabajo, no una sugerencia:
 
 Comprueba que la persona tiene lo necesario **antes** de invertir una hora de trabajo:
 cuenta de Pancake, una pagina conectada (WhatsApp API, Facebook o Instagram), permisos de
-administrador, la billetera de Pancake conectada con saldo, y Node.js instalado.
+administrador, la billetera de Pancake conectada con saldo, Node.js y Python 3. En Windows,
+ademas, Git para Windows. ⚠️ El usuario puede estar en Mac o en Windows: en Windows el
+interprete puede llamarse `python` o `py -3` en vez de `python3` — usa en todos los comandos
+el que haya respondido en la Fase 0.
 
 Si falta algo, **no avanzas a la Fase 1** — con requisitos incompletos la Fase 7 se
 estrella y se pierde todo el trabajo intermedio. Pero tampoco lo dejes solo: **ofrecele

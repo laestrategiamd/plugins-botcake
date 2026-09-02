@@ -74,6 +74,32 @@ tiene.
 **Si no lo tiene:** que descargue la version LTS de `nodejs.org`, la instale con doble
 clic, y **cierre y vuelva a abrir Claude Code** para que el sistema lo vea.
 
+### 4b. Python 3 disponible
+
+Los comandos de esta skill (`bc.py`, `montar.py`, `guardar_sesion.py`) corren en Python 3.
+
+**Como lo comprueba** (corre tu, y quedate con el PRIMERO que responda una version 3.x):
+
+```bash
+python3 --version || python --version || py -3 --version
+```
+
+- En **Mac**, `python3` puede abrir una ventana que pide instalar las «herramientas de linea
+  de comandos»: que acepte, espere a que termine, y repites el comando.
+- En **Windows**, `python3` a veces abre la Microsoft Store en vez de responder: ignoralo y
+  prueba `python` o `py -3`. Si ninguno responde, que instale desde `python.org` marcando la
+  casilla **«Add Python to PATH»** y **reinicie la app de Claude**.
+
+🔴 **Usa en TODOS los comandos de esta skill el interprete que respondio.** Donde las
+referencias dicen `python3`, sustituye por `python` o `py -3` si fue ese el que funciono.
+Anotalo en `mi-bot.json` (`requisitos.python`) para no volver a probar en la siguiente tanda.
+
+### 4c. Solo en Windows: Git para Windows
+
+La pestana Code de la app de Claude lo exige la primera vez que se abre en Windows. Si el
+usuario esta en Windows y la app no abre Code o le pide Git: que lo instale desde
+`git-scm.com` con las opciones que vienen marcadas y reinicie la app. En Mac no aplica.
+
 ### 5. Una carpeta para el proyecto
 
 Los archivos del bot (el prompt, la base de conocimiento, el diagrama) se van a guardar
@@ -90,7 +116,7 @@ bot y abrir Claude Code ahi.
 
 ## Como cierras la Fase 0
 
-Cuando los cinco esten en verde, creas `mi-bot.json` a partir de `plantilla-proyecto.json`,
+Cuando todos esten en verde (en Windows son siete; en Mac, seis), creas `mi-bot.json` a partir de `plantilla-proyecto.json`,
 anotas el canal y el nombre de la pagina, y pasas a la Fase 1.
 
 Si alguno esta en rojo, **guardas igual** lo que ya sabes en `mi-bot.json` con el requisito

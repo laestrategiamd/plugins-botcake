@@ -12,7 +12,9 @@
     "page_id": "",
     "permisos_admin": null,
     "billetera_pancake": null,
-    "nodejs": null
+    "nodejs": null,
+    "python": "",
+    "sistema": ""
   },
   "negocio": {
     "nombre": "",
