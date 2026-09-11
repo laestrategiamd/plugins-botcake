@@ -9,16 +9,25 @@ hacer de otra forma, tu haces estos clics y yo te voy diciendo."*
 
 ---
 
-## `npx playwright install` falla
+## `mibot` no existe / `command not found` / `no se reconoce`
 
-**Casi siempre es Node.js.** Comprueba:
+El acceso corto no entro al PATH de la terminal. Se llama por su ruta completa, entre
+comillas (ver `SKILL.md`, seccion "El comando mibot"):
 
 ```bash
-node -v
+node "<carpeta base de la skill>/scripts/mibot.cjs" probar
 ```
 
-- Si dice `command not found`: no esta instalado, o Claude Code se abrio antes de
-  instalarlo. Que cierre y vuelva a abrir Claude Code.
+Si tampoco: `node -v`. Si eso falla, es Node.js (abajo).
+
+---
+
+## `node: command not found` o `npx` falla
+
+**Node.js no esta, o se instalo despues de abrir la app.**
+
+- Si dice `command not found` / `no se reconoce`: no esta instalado, o la app de Claude se
+  abrio antes de instalarlo. Que cierre y vuelva a abrir la app.
 - Si la version es menor que 18: que actualice desde `nodejs.org`.
 - Si falla por permisos o por red: que lo corra el mismo en su terminal y te diga que sale.
 
@@ -27,16 +36,30 @@ node -v
 ## El navegador no abre, o abre en blanco
 
 Que cierre cualquier otra ventana del navegador automatizado que haya quedado abierta y lo
-intente otra vez. Si sigue, **plan B: todo el montaje a mano** (abajo).
+intente otra vez. Si dice que no encuentra un navegador: `npx playwright install chromium`
+(un par de minutos). Si sigue, **plan B: todo el montaje a mano** (abajo).
 
 ---
 
-## `bc.py probar` falla
+## `mibot probar` falla con `Invalid access_token` (codigo 102)
 
-1. **Que el usuario compruebe que sigue con la sesion iniciada** en la ventana del
-   navegador. Si se cerro, que entre otra vez.
-2. **La llave de sesion caduca.** Se repiten los pasos 2 y 3 de la Fase 6.
-3. Si vuelve a fallar, plan B.
+Una de dos:
+
+1. **La llave caduco.** Se repiten los pasos 2 y 3 de la Fase 6 (el usuario comprueba que
+   sigue con la sesion iniciada en el navegador; si se cerro, entra otra vez; tu vuelves a
+   leer la cookie y corres `mibot sesion`).
+2. **Se copio la clave equivocada.** La "Api key" que enseña el panel de la pagina en
+   Botcake NO sirve para esto; la que sirve es la cookie `token_jwt` del navegador. Las dos
+   empiezan por `eyJ`, asi que la forma no delata el error: solo lo delata este codigo 102.
+
+Si vuelve a fallar, plan B.
+
+---
+
+## `subir-kb` dice "ya tiene un archivo con este mismo contenido"
+
+No es un error: Botcake no vuelve a subir un archivo identico a uno que ya subio alguna
+vez. Cambia la linea `# Actualizado:` de la cabecera del archivo (fecha y hora) y repite.
 
 ---
 
@@ -46,11 +69,13 @@ Nunca lo repitas a ciegas mas de una vez: puedes dejar cosas duplicadas. Lee pri
 hay, se lo ensenas al usuario, y decidan juntos.
 
 ```bash
-python3 scripts/bc.py estado
+mibot estado
 ```
 
-Ese comando lista lo que ya existe (etiquetas, campos, agente, flujo) para saber que se
-alcanzo a crear.
+Ese comando lista lo que ya existe (etiquetas, casillas, agentes) para saber que se
+alcanzo a crear. `mibot montar` se puede repetir sin miedo: si `mi-bot.json` ya tiene el
+numero del flujo, lo reescribe en vez de crear otro, y las etiquetas y casillas que ya
+existen las reutiliza.
 
 ---
 
@@ -96,8 +121,10 @@ Con el bot apagado, se mira que fallo:
 
 | Sintoma | Donde esta el problema |
 |---------|------------------------|
-| Da datos errados o inventa precios | Base de conocimiento (`04-base-conocimiento.md`) |
-| Repite preguntas que ya hizo | El historial de chat esta apagado (paso 10 del montaje) |
-| No avisa al equipo, no pone etiquetas | La frase ancla del prompt no coincide **exactamente** con la que busca el revisor |
-| Contesta encima de un asesor | La rama de escalado no apaga el agente, o la pausa tras respuesta humana esta muy corta |
-| Habla en otro tono del que se pidio | Prompt (`03-prompt.md`), seccion COMO HABLAS |
+| Da datos errados o inventa precios | Base de conocimiento (`04-base-conocimiento.md`), o el archivo nuevo no quedo indexado (`mibot ver-conocimiento`) |
+| Repite preguntas que ya hizo | El historial de chat esta apagado (paso 9 del montaje) |
+| Ignora reglas del prompt que antes cumplia | El agente quedo en modo Rapido (paso 9 del montaje): pasa cada vez que se escribe el prompt o la KB por comando |
+| No avisa al equipo, no pone etiquetas | La frase ancla del prompt no coincide **exactamente** con la que busca el revisor, o el prompt dice que "el sistema" lo hace |
+| Contesta encima de un asesor | La rama de escalado no apaga el agente, o la pausa tras respuesta humana esta apagada |
+| No guarda el nombre ni la ciudad del cliente | La extraccion de datos no quedo configurada (paso 8 del montaje) |
+| Habla en otro tono del que se pidio | Prompt (`03-prompt.md`), seccion COMO HABLAS; mira si copio un ejemplo como guion |

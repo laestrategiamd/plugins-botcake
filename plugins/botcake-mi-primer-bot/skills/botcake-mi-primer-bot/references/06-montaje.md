@@ -1,18 +1,26 @@
 # Fases 6 y 7 — Conectar y montar
 
-Aqui se construye el bot de verdad. Unos pasos los haces tu; otros los hace el usuario con
-un clic mientras tu le dices exactamente donde. **Los dos tipos de paso estan marcados.**
+Aqui se construye el bot de verdad. Casi todo lo haces tu con `mibot`; el usuario pone las
+manos solo donde la plataforma no deja otra salida, y siempre con un clic mientras tu le
+dices exactamente donde. **Los dos tipos de paso estan marcados.**
 
 > 🔴 **La regla de esta fase: despues de cada paso, compruebas.** Botcake tiene varias
-> pantallas que muestran el cambio hecho **antes** de guardarlo, y varios botones que abren
-> una segunda confirmacion. Es facilisimo dar por hecho que guardo cuando no guardo nada.
-> Nunca digas "listo" sin haberlo leido de vuelta.
+> pantallas que muestran el cambio hecho **antes** de guardarlo, varios botones que abren
+> una segunda confirmacion, y respuestas que dicen "success" sin haber guardado nada. Es
+> facilisimo dar por hecho que guardo cuando no guardo. Nunca digas "listo" sin haberlo
+> leido de vuelta. Cada subcomando de `mibot` relee y te lo dice.
+
+Todos los comandos se corren **desde la carpeta del proyecto del usuario**.
 
 ---
 
 ## FASE 6 — Conexion
 
-### Paso 1 — Preparar el navegador `[lo haces tu]`
+### Paso 1 — Abrir Botcake en el navegador automatizado `[lo haces tu]`
+
+Con la herramienta del navegador del plugin, abre `https://botcake.io`. Si el usuario tiene
+Google Chrome, se usa ese y no hay que instalar nada. Si la herramienta responde que no
+encuentra un navegador, instala uno con:
 
 ```bash
 npx playwright install chromium
@@ -22,7 +30,7 @@ Tarda un par de minutos la primera vez. Avisale.
 
 ### Paso 2 — El usuario inicia sesion `[lo hace el usuario]`
 
-Abres `botcake.io` en el navegador automatizado y le dices, tal cual:
+Con Botcake abierto en el navegador automatizado, dile, tal cual:
 
 > "Se abrio una ventana del navegador en Botcake. **Inicia sesion tu ahi**, con tu correo y
 > tu contrasena. Yo no las veo ni las necesito. Cuando ya estes dentro y veas tu pagina,
@@ -39,30 +47,33 @@ tiene que volver a entrar.
 Cuando confirme que esta dentro, necesitas dos cosas del navegador y las dos las sacas tu,
 sin pedirle nada:
 
-- **La llave de sesion**, que esta en las cookies del navegador (`token_jwt`). Empieza
-  siempre por `eyJ`; si lo que copiaste no empieza asi, copiaste otra cosa.
+- **La llave de sesion**, que esta en las cookies del navegador (`token_jwt`). Se lee
+  ejecutando esto en la pestana de Botcake:
+  `document.cookie.split('; ').find(c => c.startsWith('token_jwt=')).slice(10)`
+  Empieza siempre por `eyJ`; si lo que copiaste no empieza asi, copiaste otra cosa.
 - **El identificador de la pagina**, que aparece en las direcciones que consulta Botcake
-  mientras el usuario navega. ⚠️ **No lo saques de la barra de direcciones**: en las
-  cuentas de WhatsApp el identificador de la barra y el que usa Botcake por dentro no
-  siempre son el mismo, y con el equivocado todo falla despues sin decir por que. Pidele al
-  usuario que haga clic en su pagina, y lo lees del trafico.
+  mientras el usuario navega (`/api/v1/pages/<identificador>/...`). ⚠️ **No lo saques de la
+  barra de direcciones**: en las cuentas de WhatsApp el identificador de la barra y el que
+  usa Botcake por dentro no siempre son el mismo, y con el equivocado todo falla despues sin
+  decir por que. Pidele al usuario que haga clic en su pagina, y lo lees del trafico de red.
 
 Con los dos:
 
 ```bash
-python3 scripts/guardar_sesion.py "<llave>" "<identificador de la pagina>"
+mibot sesion "<llave>" "<identificador de la pagina>"
 ```
 
-Esto los escribe en `.botcake-sesion`, solo legible por el usuario, y anade ese archivo y
-`mi-bot.json` al `.gitignore` para que nunca se suban a ningun lado.
+Esto los escribe en `.botcake-sesion`, solo legible por el usuario, y anade ese archivo,
+`mi-bot.json` y la carpeta de respaldos al `.gitignore` para que nunca se suban a ningun
+lado.
 
-**La llave caduca.** Si en la tanda siguiente algo falla con un aviso de sesion, se repiten
-los pasos 2 y 3 y ya.
+**La llave caduca.** Si en la tanda siguiente algo falla con `Invalid access_token`, se
+repiten los pasos 2 y 3 y ya.
 
 ### Paso 4 — Comprobar que funciona `[lo haces tu]`
 
 ```bash
-python3 scripts/bc.py probar
+mibot probar
 ```
 
 Tiene que responder que la conexion es correcta y decir cuantas etiquetas hay en esa
@@ -70,43 +81,29 @@ pagina. Enseñaselo al usuario.
 
 Si falla, ve a `08-cuando-falla.md`.
 
+### Paso 4b — Respaldo de lo que ya hay `[lo haces tu]`
+
+```bash
+mibot respaldo
+```
+
+Baja a la carpeta `respaldos/` todos los agentes que ya tenga la pagina, completos, y la
+lista de flujos. **Es obligatorio antes de escribir nada**: Botcake no tiene papelera ni
+historial, y si un paso se equivoca de agente, ese archivo es lo unico que permite
+recuperar el prompt. Dile al usuario que existe y donde esta.
+
 ---
 
 ## FASE 7 — El montaje, en orden
 
-El orden importa: cada paso necesita el anterior. Casi todo lo haces tu; el usuario solo
-pone las manos en tres momentos: crear el agente vacio, dejar el modo en «Detalle» y
-encender al final.
+El orden importa: cada paso necesita el anterior. El usuario solo pone las manos en dos
+momentos: crear el agente vacio (paso 5) y los ajustes del agente (paso 9).
 
-> 💡 **Haz el prompt y la KB seguidos, y deja el ajuste del modo «Detalle» para despues de
-> los dos.** Cada escritura al agente tumba ese interruptor; arreglarlo una sola vez al
-> final ahorra idas y vueltas.
+> 💡 **Los pasos 6, 7 y 8 escriben en el agente, y cada escritura tumba el interruptor
+> «Detalle/Rapido» del agente.** Por eso van seguidos, y el ajuste del modo se hace UNA
+> vez, al final, en el paso 9. No mandes al usuario a la pantalla entre medias.
 
-### Paso 5 — Las etiquetas `[lo haces tu]`
-
-Las etiquetas son marcas que se le ponen a una conversacion para saber en que va.
-
-```bash
-python3 scripts/bc.py crear-etiqueta "Asesor" "#e74c3c"
-```
-
-⚠️ **Maximo 15 caracteres por etiqueta.** Es un limite duro: nombres mas largos fallan.
-"Cliente calificado" no cabe; "Lead" o "Calificado" si.
-
-Las minimas de cualquier bot: una para avisar que hay que atender a mano (`Asesor`) y una
-para marcar al interesado (`Lead`). Guarda los identificadores en `mi-bot.json`.
-
-### Paso 6 — Los campos `[lo haces tu]`
-
-Son las casillas donde el bot guarda lo que averigua (nombre, ciudad, producto de interes).
-
-```bash
-python3 scripts/bc.py crear-campo "Nombre"
-```
-
-Crealos **todos como texto**, aunque sean opciones o numeros: el agente solo escribe texto.
-
-### Paso 7 — Crear el agente `[lo hace el usuario, tu le indicas]`
+### Paso 5 — Crear el agente vacio `[lo hace el usuario, tu le indicas]`
 
 Guialo pantalla por pantalla:
 
@@ -118,21 +115,28 @@ Guialo pantalla por pantalla:
 > 5. Guardar.
 
 Cuando termine, lees el identificador del agente de la direccion de la pantalla
-(`.../agents/<numero>`) y lo guardas en `mi-bot.json`.
-
-### Paso 8 — Escribir el prompt `[lo haces tu]`
+(`.../agents/<numero>`) y lo guardas en `mi-bot.json` (`montaje.agente_id`). Compruebalo:
 
 ```bash
-python3 scripts/bc.py poner-prompt <id_agente> prompt-<negocio>.txt
+mibot ver-agente <id_agente>
 ```
 
-Escribe los **dos** campos del prompt (el texto plano y el del editor) y comprueba leyendo
-de vuelta que el numero de caracteres coincide con el archivo. Si se escribiera solo uno,
-el agente seguiria con el prompt viejo y la comprobacion no lo delataria.
+Tiene que salir con el nombre que le puso y el prompt vacio.
 
-> 🔴 **Escribir por API tumba el interruptor Detalle/Rapido**, aunque no lo toques. Despues
-> del comando, guia al usuario: *abre el agente y deja el modo en «Detalle»*. Se comprueba
-> a ojo, no por API: el campo `type_setting` esta invertido y no sirve para saber el modo.
+> 🔴 **Nunca intentes crear el agente por comando.** No existe una forma segura: la que
+> parece existir escribe encima del agente que ya esta atendiendo y le borra el prompt.
+> Son tres clics del usuario y se acabo.
+
+### Paso 6 — Escribir el prompt `[lo haces tu]`
+
+```bash
+mibot poner-prompt <id_agente> prompt-<negocio>.txt
+```
+
+Comprueba que cabe en 15.000 caracteres (si no, no escribe nada), escribe los **dos**
+campos donde vive el prompt (el texto plano y el del editor), y relee: el numero de
+caracteres tiene que coincidir en los dos con el archivo. Si se escribiera solo uno, el
+agente seguiria con el prompt viejo y la comprobacion no lo delataria.
 
 **Si el comando falla dos veces**, plan B — el pegado a mano (son 10 segundos):
 
@@ -141,62 +145,104 @@ el agente seguiria con el prompt viejo y la comprobacion no lo delataria.
 > 3. **Guardar** → 🔴 **confirma en la ventana que sale.** Sin ese Confirmar no se guarda
 >    nada y la pantalla se ve igual.
 
-Y comprueba igual con `bc.py ver-agente <id>`.
+Y comprueba igual con `mibot ver-agente <id>`.
 
-### Paso 9 — Subir la base de conocimiento `[lo haces tu]`
+### Paso 7 — Subir la base de conocimiento `[lo haces tu]`
 
 ```bash
-python3 scripts/bc.py subir-kb <id_agente> conocimiento-<negocio>.txt "<una frase del archivo>"
+mibot subir-kb <id_agente> conocimiento-<negocio>.txt "<una frase del archivo>"
 ```
 
-Sube el archivo y lo adjunta al agente en un solo guardado. Espera 6 segundos y comprueba
-lo unico que importa: que la ficha del archivo traiga **`openai_file_id` y
-`cake_ai_file_id`**. Sin esos dos identificadores el archivo esta en la biblioteca pero el
-bot NO lo lee.
+Sube el archivo, comprueba que lo que quedo en Botcake es identico al archivo local, lo
+engancha al agente, y espera (hasta 48 segundos) a que Botcake lo indexe. Lo unico que
+importa es que la ficha del archivo traiga **los dos identificadores del indexado**; sin
+ellos el archivo esta en la biblioteca pero el bot NO lo lee. Al final descarga lo que el
+agente tiene puesto y busca la frase dentro.
 
-> ⚠️ **`meta_data.bytes` se queda en 0 aunque el archivo este indexado**: no lo uses como
-> senal de nada. Los dos ids son la senal buena.
+Dos cosas que pueden pasar y no son errores tuyos:
 
-**Al reemplazar una KB** (mantenimiento, no primer montaje): adjunta la nueva **junto a la
-vieja**, comprueba que la nueva trae sus ids, y **en un segundo guardado quita la vieja**.
-Nunca al reves: si quitas primero, el agente se queda sin conocimiento entre los dos pasos.
-No hay forma de borrar un archivo de la biblioteca de la pagina; solo se desadjunta del
-agente.
+- **"Botcake ya tiene un archivo con este mismo contenido"**: Botcake no vuelve a subir un
+  archivo identico a uno que ya subio alguna vez (aunque no este enganchado). Cambia la
+  linea `# Actualizado:` de la cabecera del archivo y repite.
+- **"quedo adjunto pero NO indexado"**: a veces tarda mas. Espera un minuto y comprueba con
+  `mibot ver-conocimiento <id> "<frase>"`.
+
+**Al reemplazar una KB** (mantenimiento, no primer montaje): sube la nueva con el mismo
+comando (queda **junto** a la vieja), comprueba que la nueva esta indexada, y **en un
+segundo paso quita la vieja**. Nunca al reves: si quitas primero, el agente se queda sin
+conocimiento entre los dos pasos. No hay forma de borrar un archivo de la biblioteca de la
+pagina; solo se desengancha del agente.
 
 **Si el comando falla dos veces**, plan B por la interfaz:
 
-> Conocimiento → **Anadir archivos** → Subir → **Confirmar** → marcar el archivo nuevo y
-> desmarcar el viejo → **Agregar a la instruccion** → **Guardar → Confirmar**.
+> Conocimiento → **Anadir archivos** → **Subir** (ese boton ya abre el selector; no pulses
+> ademas la zona de arrastrar) → elegir el archivo → **Confirmar** → marcar el archivo
+> nuevo y desmarcar el viejo → **Agregar a la instruccion** → **Guardar → Confirmar**.
 > 🔴 Entre marcar y Guardar la pantalla ya se ve con el archivo puesto **y no se ha guardado
 > nada**.
 
-Comprueba igual con `bc.py ver-conocimiento <id> "<frase>"`, que descarga el archivo que el
-agente tiene puesto ahora mismo y busca la frase dentro.
+Comprueba igual con `mibot ver-conocimiento <id> "<frase>"`.
 
-### Paso 10 — Los ajustes que casi nadie toca `[lo hace el usuario, tu le indicas]`
+### Paso 8 — La extraccion de datos `[lo haces tu]`
 
-Cuatro cosas, y las cuatro cambian como se porta el bot:
+Es lo que hace que el bot **guarde** lo que averigua (nombre, ciudad, producto de
+interes) en las casillas del cliente, donde el equipo lo ve al abrir la conversacion.
+Sin este paso el bot pregunta el nombre y no lo anota en ningun lado.
+
+Antes del comando, en `mi-bot.json` cada dato de `estilo.datos_a_capturar` tiene que tener
+su instruccion de extraccion (la escribes tu, viene del bloque H del cuestionario):
+
+```json
+"datos_a_capturar": [
+  {"campo": "Nombre", "instruccion": "El primer nombre del cliente, como lo dijo el. Si no lo dijo, vacio."},
+  {"campo": "Ciudad", "instruccion": "La ciudad donde esta el cliente o a donde quiere el envio. Si no la dijo, vacio."},
+  {"campo": "Interes", "instruccion": "El producto o servicio por el que pregunta, con el nombre exacto del catalogo. Si no lo dijo, vacio."}
+]
+```
+
+Cada instruccion: que es el dato + como lo suele decir el cliente + formato exacto + "si no
+lo dijo, vacio". **Maximo 200 caracteres cada una** (el comando lo comprueba). Luego:
+
+```bash
+mibot extraer-datos <id_agente>
+```
+
+Crea las casillas que falten (todas de texto) y configura la extraccion en el agente.
+Relee y te dice cuantas quedaron.
+
+### Paso 9 — Los ajustes del agente `[lo hace el usuario, tu le indicas]`
+
+Cinco cosas, y las cinco cambian como se porta el bot. Van todas seguidas, en un solo
+recorrido por la pantalla:
 
 | Ajuste | Donde | Como se deja |
 |--------|-------|--------------|
+| **Modo Detalle** | Dentro del agente, interruptor **Detalle / Rapido** | **Detalle**, y **Guardar → Confirmar**. Escribir por comando lo deja en Rapido aunque no se toque; en Rapido el bot no lee el prompt completo. Se comprueba a ojo (recargar la pagina y ver que sigue en Detalle), no por comando. |
 | **Historial de chat** | Botcake AI → General → *Habilitar historial de chat* | **ENCENDIDO**. Si esta apagado el bot no recuerda nada y repite las mismas preguntas, por mucho que el prompt lo prohiba. Es la queja numero uno. |
+| **Audiencia** | Botcake AI → General | **Todos**. En "Administradores" solo le contesta a los administradores de la pagina: sirve para probar, mortal si se queda asi. |
 | **Modelo** | Dentro del agente | El que el usuario prefiera segun su presupuesto. Uno mas caro no arregla un prompt malo. |
+| **Pausa cuando contesta una persona** | Configuracion → Conversacion de Pancake → *Cuando el personal responde* → **Pausar Botcake AI** | Encendido, con la duracion en **1 hora** (es el maximo que ofrece). Es lo que evita que el bot escriba encima de un asesor. No confundir con el interruptor vecino "Pausar Bot", que apaga todos los flujos. |
 | **Horario** | Configuracion → Horario de funcionamiento | Solo si el usuario NO quiere que conteste de noche. Si quiere 24 horas, no se toca. |
-| **Pausa cuando contesta una persona** | Configuracion → Conversacion de Pancake → *Cuando el personal responde* | Ponla en 2 horas como minimo. Es lo que evita que el bot escriba encima de un asesor. |
 
-### Paso 11 — Montar el flujo `[lo haces tu]`
+Cuando termine, `mibot ver-agente <id>` tiene que seguir mostrando el prompt completo y el
+archivo enganchado (los ajustes de pantalla no los tocan, pero se comprueba igual).
+
+### Paso 10 — Montar el flujo `[lo haces tu]`
 
 ```bash
-python3 scripts/montar.py
+mibot montar
 ```
 
-Lee `mi-bot.json` y construye el flujo completo: el paso que enciende el agente, el agente,
-el revisor y cada rama con sus acciones.
+Lee `mi-bot.json`, comprueba que cada frase ancla esta escrita tal cual en el prompt del
+agente (si no, se niega y te dice cual falta), crea las etiquetas y las casillas que
+falten, y construye el flujo completo: la puerta, el agente, el revisor, cada rama con sus
+acciones y la espera que cierra el circulo. Lo relee y te dice cuantos pasos quedaron.
 
-Despues lo lees de vuelta y le ensenas al usuario un resumen: cuantos pasos quedaron y que
-hace cada rama.
+Enseñale al usuario un resumen: cuantos pasos quedaron y que hace cada rama. Si quiere
+verlo, la pantalla es Botcake → **Automatizacion** → **Flujos** → el flujo con el nombre
+del bot.
 
-### Paso 12 — Dejarlo apagado y cerrar la tanda
+### Paso 11 — Dejarlo apagado y cerrar la tanda
 
 **No conectes el punto de entrada todavia.**
 

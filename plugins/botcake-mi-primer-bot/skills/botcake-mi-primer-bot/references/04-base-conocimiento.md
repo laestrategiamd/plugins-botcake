@@ -94,6 +94,9 @@ prompt se le dice que los productos los consulta en el catalogo.
 - **Subir un archivo con el mismo nombre NO reemplaza al anterior:** quedan los dos. Lo que
   decide cual usa el bot es cual esta marcado. Esto importa en la Fase 7 y esta explicado
   ahi.
+- **Botcake no vuelve a subir un archivo identico a uno que ya subio alguna vez.** Por eso
+  la cabecera lleva la linea `# Actualizado:` con fecha y hora: cada version cambia esa
+  linea y Botcake la acepta como archivo nuevo.
 
 ---
 

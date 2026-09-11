@@ -120,6 +120,10 @@ todo".
 
 29. ★ **Que datos necesitas de cada persona que escribe?** (Nombre, ciudad, telefono,
     producto de interes, presupuesto.) Pide los minimos: cada dato de mas cuesta clientes.
+    Cada uno se guarda en `mi-bot.json` como `{"campo": "Ciudad", "instruccion": "..."}`:
+    el nombre corto de la casilla y una instruccion de maximo 200 caracteres que diga que
+    es el dato, como lo suele decir el cliente, en que formato se anota y "si no lo dijo,
+    vacio". Esa instruccion es la que usa el bot para anotarlo solo (paso 8 del montaje).
 30. ★ **De usted o de tu?**
 31. **Emojis: si, pocos, o ninguno?**
 32. **Mensajes cortos o explicados?** (En WhatsApp, cortos casi siempre.)

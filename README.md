@@ -5,15 +5,18 @@ desde Claude Code.
 
 ## Instalacion
 
-En tu terminal, dentro de Claude Code:
+En la app de Claude (pestana Code), pidele a Claude en el chat que instale el plugin, o
+escribe en la terminal:
 
 ```
-/plugin marketplace add laestrategiamd/plugins-botcake
+claude plugin marketplace add laestrategiamd/plugins-botcake
 ```
 
 ```
-/plugin install botcake-mi-primer-bot@la-estrategia
+claude plugin install botcake-mi-primer-bot@la-estrategia
 ```
+
+Despues, abre una sesion nueva. Funciona en Mac y en Windows.
 
 ## Que hay aqui
 
@@ -33,16 +36,19 @@ escribiendo *sigamos con mi bot*.
 
 ## Que necesitas antes de empezar
 
-- Cuenta de Pancake con una pagina conectada (WhatsApp API, Facebook o Instagram).
+- Cuenta de Pancake con una pagina conectada (WhatsApp API, Facebook o Instagram). Una
+  cuenta nueva trae 14 dias de prueba gratis: alcanzan para dejar el bot funcionando.
 - Permisos de administrador en esa pagina.
 - La billetera de Pancake conectada, con saldo (la conecta el dueno de la cuenta).
-- Node.js instalado (`nodejs.org`, version LTS).
-- Claude Code en tu computador.
+- Node.js instalado (`nodejs.org`, version LTS). En Windows, ademas, Git para Windows
+  (`git-scm.com`).
+- La app de Claude (pestana Code) o Claude Code en tu computador.
 
 ## Aviso
 
 Este plugin trabaja sobre tu propia cuenta de Botcake, con tu sesion. No pide ni guarda
-contrasenas: tu inicias sesion en el navegador que se abre.
+contrasenas: tu inicias sesion en el navegador que se abre. Antes de escribir nada en tu
+cuenta baja un respaldo de lo que ya tienes.
 
 Botcake es una plataforma de terceros y puede cambiar. Si algo deja de funcionar, el plugin
 te lleva por el camino manual para que termines igual, y te pide que reportes el fallo.

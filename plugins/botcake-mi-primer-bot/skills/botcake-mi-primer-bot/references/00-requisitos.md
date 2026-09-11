@@ -58,9 +58,10 @@ estan en `00b-arranque-desde-cero.md` (bloque 5); si es otra persona, diselo asi
 tiene que hacer el dueno de la cuenta desde Botcake AI, porque implica el cobro del
 consumo. Cuando este conectado seguimos."*
 
-### 4. Node.js instalado
+### 4. Node.js instalado (y en Windows, Git para Windows)
 
-Hace falta para el navegador automatizado que monta el bot en la Fase 7.
+Hace falta para dos cosas: el navegador automatizado que abre Botcake, y el comando
+`mibot` que hace el montaje. Es lo unico que hay que instalar.
 
 **Como lo comprueba** (corre tu este comando):
 
@@ -68,37 +69,32 @@ Hace falta para el navegador automatizado que monta el bot en la Fase 7.
 node -v
 ```
 
-Si responde algo como `v20.11.0` o superior, esta bien. Si dice `command not found`, no lo
-tiene.
+Si responde `v18` o superior (por ejemplo `v22.11.0`), esta bien. Si dice `command not
+found` o `no se reconoce`, no lo tiene.
 
 **Si no lo tiene:** que descargue la version LTS de `nodejs.org`, la instale con doble
-clic, y **cierre y vuelva a abrir Claude Code** para que el sistema lo vea.
+clic (en Windows, con las opciones que vienen marcadas), y **cierre y vuelva a abrir la
+app de Claude** para que el sistema lo vea.
 
-### 4b. Python 3 disponible
+**Solo en Windows: Git para Windows.** La pestana Code de la app de Claude lo exige la
+primera vez que se abre en Windows, y es lo que hace que los comandos de esta skill corran
+igual que en Mac. Si el usuario esta en Windows y la app no abre Code o le pide Git: que lo
+instale desde `git-scm.com` con las opciones que vienen marcadas y reinicie la app. En Mac
+no aplica.
 
-Los comandos de esta skill (`bc.py`, `montar.py`, `guardar_sesion.py`) corren en Python 3.
+**Google Chrome (opcional, pero ayuda).** Si el usuario tiene Google Chrome instalado, el
+navegador automatizado lo usa y no hay que descargar nada mas. Si no lo tiene, en la Fase 6
+se descarga un navegador aparte (tarda un par de minutos). Anota si lo tiene.
 
-**Como lo comprueba** (corre tu, y quedate con el PRIMERO que responda una version 3.x):
+Despues comprueba tu que el comando del plugin responde:
 
 ```bash
-python3 --version || python --version || py -3 --version
+mibot
 ```
 
-- En **Mac**, `python3` puede abrir una ventana que pide instalar las «herramientas de linea
-  de comandos»: que acepte, espere a que termine, y repites el comando.
-- En **Windows**, `python3` a veces abre la Microsoft Store en vez de responder: ignoralo y
-  prueba `python` o `py -3`. Si ninguno responde, que instale desde `python.org` marcando la
-  casilla **«Add Python to PATH»** y **reinicie la app de Claude**.
-
-🔴 **Usa en TODOS los comandos de esta skill el interprete que respondio.** Donde las
-referencias dicen `python3`, sustituye por `python` o `py -3` si fue ese el que funciono.
-Anotalo en `mi-bot.json` (`requisitos.python`) para no volver a probar en la siguiente tanda.
-
-### 4c. Solo en Windows: Git para Windows
-
-La pestana Code de la app de Claude lo exige la primera vez que se abre en Windows. Si el
-usuario esta en Windows y la app no abre Code o le pide Git: que lo instale desde
-`git-scm.com` con las opciones que vienen marcadas y reinicie la app. En Mac no aplica.
+Tiene que imprimir la lista de subcomandos. Si dice que `mibot` no existe, usa la ruta
+completa que explica `SKILL.md` (seccion "El comando mibot") y anota en `mi-bot.json`
+(`requisitos.mibot`) cual de las dos formas funciono, para no volver a probar.
 
 ### 5. Una carpeta para el proyecto
 
@@ -110,14 +106,15 @@ pwd && ls
 ```
 
 Si esta en una carpeta llena de cosas ajenas, sugierele crear una carpeta propia para el
-bot y abrir Claude Code ahi.
+bot (por ejemplo `mi-bot`) y abrir Claude Code ahi.
 
 ---
 
 ## Como cierras la Fase 0
 
-Cuando todos esten en verde (en Windows son siete; en Mac, seis), creas `mi-bot.json` a partir de `plantilla-proyecto.json`,
-anotas el canal y el nombre de la pagina, y pasas a la Fase 1.
+Cuando los cinco esten en verde, creas `mi-bot.json` a partir de `plantilla-proyecto.json`,
+anotas el canal, el nombre de la pagina, el sistema (Mac o Windows) y si tiene Chrome, y
+pasas a la Fase 1.
 
 Si alguno esta en rojo, **guardas igual** lo que ya sabes en `mi-bot.json` con el requisito
 que falta marcado, y le dices que vuelva cuando lo tenga. Asi al volver no empieza de cero.

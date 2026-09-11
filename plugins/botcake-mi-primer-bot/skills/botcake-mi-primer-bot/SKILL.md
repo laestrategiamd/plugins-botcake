@@ -44,6 +44,30 @@ diselo, pidele que la cambie en Botcake, y sigue con el procedimiento del archiv
 
 ---
 
+## El comando `mibot`
+
+Todo lo que se hace sobre la cuenta de Botcake pasa por un solo comando, `mibot`, que
+viene con el plugin y **se corre siempre desde la carpeta del proyecto del usuario** (ahi
+viven `mi-bot.json` y la llave de sesion). Ejemplo:
+
+```bash
+mibot probar
+```
+
+Si la terminal responde que `mibot` no existe, se llama por su ruta completa: el archivo
+es `scripts/mibot.cjs` dentro de la carpeta base de esta skill (la ruta que aparece como
+*Base directory* cuando la skill se carga). Va entre comillas, porque en Windows las rutas
+suelen tener espacios:
+
+```bash
+node "<carpeta base de la skill>/scripts/mibot.cjs" probar
+```
+
+`mibot` sin nada mas imprime la lista de subcomandos. Funciona igual en Mac y en Windows;
+solo necesita Node.js.
+
+---
+
 ## Como se trabaja: por tandas
 
 Construir un bot completo no cabe en una sola conversacion, y la mayoria de las personas
@@ -99,9 +123,9 @@ Estas reglas son parte del trabajo, no una sugerencia:
 - **Los archivos largos se escriben en disco, no se pegan en el chat.** El prompt y la
   base de conocimiento se guardan como archivos y le dices al usuario la ruta. Pegarlos en
   la conversacion gasta el doble y ademas el usuario los necesita como archivo.
-- **En el navegador, evitas las fotos de pantalla.** Para consultar o montar cosas usas las
-  llamadas del script (devuelven dos lineas); las fotos solo cuando el usuario tiene que
-  ver donde hacer clic.
+- **En el navegador, evitas las fotos de pantalla.** Para consultar o montar cosas usas
+  `mibot` (devuelve dos lineas); las fotos solo cuando el usuario tiene que ver donde hacer
+  clic.
 - **No relees `mi-bot.json` entero cada dos mensajes.** Lo lees al empezar y lo escribes al
   cerrar cada fase.
 
@@ -115,10 +139,9 @@ Estas reglas son parte del trabajo, no una sugerencia:
 
 Comprueba que la persona tiene lo necesario **antes** de invertir una hora de trabajo:
 cuenta de Pancake, una pagina conectada (WhatsApp API, Facebook o Instagram), permisos de
-administrador, la billetera de Pancake conectada con saldo, Node.js y Python 3. En Windows,
-ademas, Git para Windows. ⚠️ El usuario puede estar en Mac o en Windows: en Windows el
-interprete puede llamarse `python` o `py -3` en vez de `python3` — usa en todos los comandos
-el que haya respondido en la Fase 0.
+administrador, la billetera de Pancake conectada con saldo, y Node.js (en Windows, ademas,
+Git para Windows). El usuario puede estar en Mac o en Windows: `mibot` funciona igual en
+los dos.
 
 Si falta algo, **no avanzas a la Fase 1** — con requisitos incompletos la Fase 7 se
 estrella y se pierde todo el trabajo intermedio. Pero tampoco lo dejes solo: **ofrecele
@@ -181,7 +204,8 @@ Son dos cosas distintas y hay que explicarle la diferencia con estas palabras:
 
 Los dos se guardan como archivos en la carpeta del usuario. Antes de darlos por buenos,
 **los cruzas**: que el prompt no prometa nada que la base de conocimiento no tenga, y que
-no haya un dato en dos sitios con dos valores distintos.
+no haya un dato en dos sitios con dos valores distintos. Y mides el prompt con
+`mibot medir prompt-<negocio>.txt`: tiene que caber en 15.000 caracteres.
 
 **Cierra la tanda 2 aqui.**
 
@@ -189,18 +213,20 @@ no haya un dato en dos sitios con dos valores distintos.
 
 **Abre:** `references/06-montaje.md` (seccion "Conexion")
 
-Instalas el navegador automatizado, lo abres en Botcake, y **el usuario inicia sesion el
-mismo**. Tu no le pides usuario ni contrasena. Una vez dentro, guardas la llave de sesion
-en un archivo local y verificas que funciona listando las paginas de su cuenta.
+Abres Botcake en el navegador automatizado y **el usuario inicia sesion el mismo**. Tu no
+le pides usuario ni contrasena. Una vez dentro, guardas la llave de sesion en un archivo
+local, verificas que funciona, y **bajas un respaldo de lo que ya hay en la cuenta** antes
+de escribir nada (Botcake no tiene papelera).
 
 ### Fase 7 — Montar el bot
 
 **Abre:** `references/06-montaje.md` (completo)
 
-En este orden: etiquetas, campos, agente, prompt, base de conocimiento, flujo. Algunos
-pasos los haces tu solo; otros los hace el usuario con un clic mientras tu le indicas
-donde. **Despues de cada paso compruebas que quedo hecho de verdad** — Botcake dice "listo"
-en varios sitios donde no guardo nada.
+En este orden: el agente vacio (lo crea el usuario con tres clics), el prompt, la base de
+conocimiento, la extraccion de datos, los ajustes del agente (usuario), y el flujo. Casi
+todo lo haces tu con `mibot`; el usuario solo pone las manos donde la plataforma no deja
+otra salida. **Despues de cada paso compruebas que quedo hecho de verdad** — Botcake dice
+"listo" en varios sitios donde no guardo nada.
 
 El bot queda montado y **sin punto de entrada**, o sea apagado.
 
@@ -210,9 +236,12 @@ El bot queda montado y **sin punto de entrada**, o sea apagado.
 
 **Abre:** `references/07-pruebas.md`
 
-Preparas 10 preguntas de prueba sacadas de su propio negocio, no genericas. El usuario las
-manda por su WhatsApp o Messenger real. Le ensenas las respuestas del bot, una por una, y
-las revisan juntos. Lo que este mal se corrige y se vuelve a probar.
+Preparas 10 preguntas de prueba sacadas de su propio negocio, no genericas. Primero una
+**prueba rapida** por `mibot` (sin telefono, sin encender nada) para afinar el prompt y la
+base de conocimiento; despues la **prueba real** desde otro telefono, con una palabra clave
+de prueba, para ver el flujo completo: etiquetas, traspaso a persona, apagado. Le ensenas
+las respuestas del bot, una por una, y las revisan juntos. Lo que este mal se corrige y se
+vuelve a probar.
 
 Cuando el usuario apruebe, **entonces** se conecta el punto de entrada y el bot queda
 atendiendo. Le entregas al final un resumen de que quedo montado y como apagarlo si algo

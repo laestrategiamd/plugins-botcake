@@ -1,0 +1,4 @@
+#!/bin/sh
+# Acceso corto al comando del plugin (Mac, Linux y Git Bash en Windows).
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec node "$DIR/../skills/botcake-mi-primer-bot/scripts/mibot.cjs" "$@"
