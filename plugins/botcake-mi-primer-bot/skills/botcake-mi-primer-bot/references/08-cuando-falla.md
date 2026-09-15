@@ -63,6 +63,17 @@ vez. Cambia la linea `# Actualizado:` de la cabecera del archivo (fecha y hora) 
 
 ---
 
+## `subir-kb` dice "No pude comprobar el archivo subido"
+
+Botcake recibio el archivo pero no dejo descargarlo para comprobarlo (a veces responde con
+un error 502 justo despues de subir). El comando lo reintenta durante un minuto y, si sigue
+sin poder, **no lo engancha al agente**: no se toca nada sin comprobarlo. El archivo si
+quedo en la biblioteca de la pagina, asi que repetir tal cual daria "ya tiene un archivo
+con este mismo contenido": cambia la linea `# Actualizado:` de la cabecera y repite. La
+ficha del archivo queda guardada en la carpeta `respaldos/` por si hace falta.
+
+---
+
 ## Un paso de montaje falla o el resultado no coincide
 
 Nunca lo repitas a ciegas mas de una vez: puedes dejar cosas duplicadas. Lee primero lo que
@@ -123,7 +134,7 @@ Con el bot apagado, se mira que fallo:
 |---------|------------------------|
 | Da datos errados o inventa precios | Base de conocimiento (`04-base-conocimiento.md`), o el archivo nuevo no quedo indexado (`mibot ver-conocimiento`) |
 | Repite preguntas que ya hizo | El historial de chat esta apagado (paso 9 del montaje) |
-| Ignora reglas del prompt que antes cumplia | El agente quedo en modo Rapido (paso 9 del montaje): pasa cada vez que se escribe el prompt o la KB por comando |
+| Ignora reglas del prompt que antes cumplia | El agente quedo en modo Rapido (paso 9 del montaje): puede pasar al escribir el prompt o la KB por comando |
 | No avisa al equipo, no pone etiquetas | La frase ancla del prompt no coincide **exactamente** con la que busca el revisor, o el prompt dice que "el sistema" lo hace |
 | Contesta encima de un asesor | La rama de escalado no apaga el agente, o la pausa tras respuesta humana esta apagada |
 | No guarda el nombre ni la ciudad del cliente | La extraccion de datos no quedo configurada (paso 8 del montaje) |

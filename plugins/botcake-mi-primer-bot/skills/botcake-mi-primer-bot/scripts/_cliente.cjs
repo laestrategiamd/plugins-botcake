@@ -231,12 +231,38 @@ class Botcake {
     const nuevo = r.page_content || r.file || r.data || null;
     if (!nuevo || !nuevo.id) throw new Error(`No se pudo subir el archivo: ${JSON.stringify(r).slice(0, 300)}`);
 
+    // La ficha se guarda en disco ANTES de nada: si algo falla despues, el archivo ya esta en
+    // la biblioteca de la pagina y volver a subirlo daria "File already exists" sin ficha.
+    fs.mkdirSync('respaldos', { recursive: true });
+    const rutaFicha = path.join('respaldos', `ficha-kb-${nuevo.id}.json`);
+    fs.writeFileSync(rutaFicha, JSON.stringify(nuevo, null, 1));
+
     // meta_data.bytes llega en 0 aunque el archivo este entero: se comprueba descargando.
-    const guardado = Buffer.from(await (await fetch(nuevo.path)).arrayBuffer());
+    // Justo despues de subir, la descarga puede dar 502: se reintenta con espera.
     const local = fs.readFileSync(ruta);
     const norm = (b) => b.toString('utf8').replace(/\r\n/g, '\n');
-    if (norm(guardado) !== norm(local)) {
-      throw new Error('Lo que quedo en Botcake no coincide con el archivo local. No se engancha.');
+    let comprobado = false;
+    let motivo = '';
+    for (let i = 0; i < 8 && !comprobado; i++) {
+      if (i) await dormir(8000);
+      try {
+        const res = await fetch(nuevo.path);
+        if (!res.ok) { motivo = `HTTP ${res.status}`; continue; }
+        const guardado = Buffer.from(await res.arrayBuffer());
+        if (norm(guardado) !== norm(local)) {
+          throw new Error('Lo que quedo en Botcake no coincide con el archivo local. No se engancha.');
+        }
+        comprobado = true;
+      } catch (e) {
+        if (e.message.startsWith('Lo que quedo')) throw e;
+        motivo = e.message;
+      }
+    }
+    if (!comprobado) {
+      throw new Error(
+        `No pude comprobar el archivo subido (${motivo}). No se engancha al agente.\n` +
+          `  La ficha quedo en ${rutaFicha}. Para reintentar, cambia la linea "Actualizado:" de la cabecera.`
+      );
     }
 
     const a = await this.agente(id);

@@ -187,7 +187,7 @@ async function ponerPrompt(bc, id, ruta, tope) {
   }
   console.log(`Coincide. Archivos de conocimiento que siguen enganchados: ${r.archivos}`);
   console.log('>>> AL FINAL DEL MONTAJE, EN LA INTERFAZ: abre el agente y deja el modo en «Detalle».');
-  console.log('    Escribir por API tumba ese interruptor aunque no se toque.');
+  console.log('    Escribir por comando puede cambiarlo aunque no se toque: se revisa siempre.');
   return 0;
 }
 

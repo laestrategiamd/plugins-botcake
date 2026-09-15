@@ -99,9 +99,10 @@ recuperar el prompt. Dile al usuario que existe y donde esta.
 El orden importa: cada paso necesita el anterior. El usuario solo pone las manos en dos
 momentos: crear el agente vacio (paso 5) y los ajustes del agente (paso 9).
 
-> 💡 **Los pasos 6, 7 y 8 escriben en el agente, y cada escritura tumba el interruptor
-> «Detalle/Rapido» del agente.** Por eso van seguidos, y el ajuste del modo se hace UNA
-> vez, al final, en el paso 9. No mandes al usuario a la pantalla entre medias.
+> 💡 **Los pasos 6, 7 y 8 escriben en el agente, y escribir por comando puede cambiar el
+> modo del agente de «Detalle» a «Rapido»** (antes pasaba siempre; en septiembre de 2026
+> dejo de pasar en algunas cuentas). Por eso van seguidos, y el modo se revisa UNA vez, al
+> final, en el paso 9. No mandes al usuario a la pantalla entre medias.
 
 ### Paso 5 — Crear el agente vacio `[lo hace el usuario, tu le indicas]`
 
@@ -217,7 +218,7 @@ recorrido por la pantalla:
 
 | Ajuste | Donde | Como se deja |
 |--------|-------|--------------|
-| **Modo Detalle** | Dentro del agente, interruptor **Detalle / Rapido** | **Detalle**, y **Guardar → Confirmar**. Escribir por comando lo deja en Rapido aunque no se toque; en Rapido el bot no lee el prompt completo. Se comprueba a ojo (recargar la pagina y ver que sigue en Detalle), no por comando. |
+| **Modo Detalle** | Dentro del agente, arriba: un boton que dice **«Detalle ▾»** o **«Rapido ▾»**, al lado de «Mejoras de IA» | Clic en ese boton → en el menu que se abre, elegir **Detalle** (la opcion elegida lleva ✓). Si la pantalla pide guardar: **Guardar → Confirmar**. En Rapido el bot no lee el prompt completo. Se comprueba a ojo: recargar la pagina, abrir otra vez ese menu y ver el ✓ en Detalle. No por comando. |
 | **Historial de chat** | Botcake AI → General → *Habilitar historial de chat* | **ENCENDIDO**. Si esta apagado el bot no recuerda nada y repite las mismas preguntas, por mucho que el prompt lo prohiba. Es la queja numero uno. |
 | **Audiencia** | Botcake AI → General | **Todos**. En "Administradores" solo le contesta a los administradores de la pagina: sirve para probar, mortal si se queda asi. |
 | **Modelo** | Dentro del agente | El que el usuario prefiera segun su presupuesto. Uno mas caro no arregla un prompt malo. |

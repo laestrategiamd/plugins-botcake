@@ -61,8 +61,8 @@ Tres cosas que hay que saber:
 
 Lo que este mal se corrige en el archivo (prompt o base de conocimiento), se vuelve a subir
 con `mibot poner-prompt` o `mibot subir-kb`, y se repite solo esa pregunta. ⚠️ Cada vez que
-escribas el prompt o la KB, el modo del agente vuelve a Rapido: **al terminar las
-correcciones, el usuario lo deja otra vez en «Detalle»** (paso 9 del montaje).
+escribas el prompt o la KB, el modo del agente puede volver a Rapido: **al terminar las
+correcciones, el usuario revisa que siga en «Detalle»** (paso 9 del montaje).
 
 ---
 
@@ -153,7 +153,7 @@ tambien la ven. Si te molesta, en el prompt se puede pedir que la escriba en una
 aparte y mas discreta, pero tiene que estar."*
 
 Lo que este mal se corrige (prompt o base de conocimiento), se vuelve a subir y **se repite
-solo esa prueba**. Y otra vez: tras cada subida, el usuario deja el modo en «Detalle».
+solo esa prueba**. Y otra vez: tras cada subida, el usuario revisa que el modo siga en «Detalle».
 
 ---
 
