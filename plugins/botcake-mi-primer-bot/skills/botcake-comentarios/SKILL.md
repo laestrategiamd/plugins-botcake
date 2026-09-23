@@ -173,6 +173,7 @@ salio en pantalla.
 
 - No conecta la pagina ni la cuenta de Instagram por el usuario (lo acompana).
 - No publica en sus redes ni comenta por el: la prueba la hace el desde su cuenta.
+- No confirma pedidos por WhatsApp: eso es la skill hermana `botcake-confirmacion`.
 - No responde con inteligencia artificial. Si ya tiene el bot del primer recorrido,
   Botcake permite que ese agente responda los comentarios (`references/02-montaje.md`, al
   final), pero es un paso aparte y opcional.

@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "creado": "",
+  "actualizado": "",
+  "fase_actual": 0,
+  "tanda_actual": 1,
+  "requisitos": {
+    "whatsapp_api": null,
+    "pedidos_en_pancake": null,
+    "origen_de_los_pedidos": "",
+    "saldo_whatsapp": null,
+    "otra_confirmacion_activa": null,
+    "nodejs": null,
+    "sistema": ""
+  },
+  "marca": {
+    "nombre": "",
+    "trato": "",
+    "emojis": "",
+    "cobra_contra_entrega": null,
+    "quien_atiende": ""
+  },
+  "plantillas": {
+    "aprobadas_por_el_usuario": false,
+    "boton_confirmar": "Sí, confirmar",
+    "boton_modificar": "Modificar datos",
+    "confirmacion": {
+      "nombre": "confirmacion_pedido",
+      "encabezado": "",
+      "cuerpo": "",
+      "variables": ["FULL_NAME", "ORDER_ID", "ITEMS", "COD", "FULL_ADDRESS", "PHONE_NUMBER"],
+      "ejemplos": [],
+      "estado": "",
+      "categoria": ""
+    },
+    "recordatorio": {
+      "nombre": "recordatorio_confirmacion",
+      "encabezado": "",
+      "cuerpo": "",
+      "variables": ["FULL_NAME", "ORDER_ID", "ITEMS", "COD"],
+      "ejemplos": [],
+      "estado": "",
+      "categoria": ""
+    }
+  },
+  "mensajes": {
+    "gracias": "",
+    "modificar": ""
+  },
+  "tiempos": {
+    "recordatorio_horas": 2,
+    "seguimiento_dias": 1,
+    "desde": 8,
+    "hasta": 22
+  },
+  "montaje": {},
+  "encendido": {
+    "pasos_activos": false,
+    "pos_conectado": false,
+    "probado": false
+  },
+  "pendientes": []
+}

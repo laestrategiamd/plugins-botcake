@@ -410,6 +410,85 @@ class Botcake {
     return (await this.get(`customers/${id}/info`)).customer_info || null;
   }
 
+  // ---------- plantillas de WhatsApp (Meta) ----------
+  // Primero sincroniza con Meta; si no, el estado (PENDING, APPROVED, REJECTED) puede estar viejo.
+  // Cada plantilla trae {id, name, status, category, language, components}.
+  async plantillas() {
+    await this.get('message_templates/sync');
+    const r = await this.get('message_templates');
+    // Una llave caducada devolveria una lista vacia y pareceria que no hay plantillas.
+    if (!Array.isArray(r.data)) throw new Error(`No pude leer las plantillas: ${JSON.stringify(r).slice(0, 200)}`);
+    return r.data;
+  }
+
+  // Manda una plantilla a revision de Meta. Botcake responde success aunque Meta la pase despues a
+  // MARKETING: la categoria y el estado se leen con plantillas(), nunca de esta respuesta.
+  crearPlantilla(t) {
+    const comps = [];
+    if (t.encabezado) comps.push({ type: 'HEADER', format: 'TEXT', text: t.encabezado });
+    comps.push({ type: 'BODY', text: t.cuerpo, example: { body_text: [t.ejemplos] } });
+    comps.push({ type: 'BUTTONS', buttons: t.botones.map((b) => ({ type: 'QUICK_REPLY', text: b })) });
+    return this.post('message_templates/create', [['template', JSON.stringify({
+      type: 'DEFAULT', name: t.nombre, category: 'UTILITY', parameter_format: 'POSITIONAL', language: 'es',
+      languages: [{ code: 'es', components: comps }],
+    })]]);
+  }
+
+  // ---------- secuencias ----------
+  async secuencia(id) {
+    return (await this.get(`sequences/${id}`)).sequence || null;
+  }
+
+  async crearSecuencia(nombre) {
+    const r = await this.post('sequences', [['name', nombre]]);
+    const s = r.sequence || {};
+    if (!s.id) throw new Error(`No se pudo crear la secuencia: ${JSON.stringify(r).slice(0, 300)}`);
+    return s.id;
+  }
+
+  // Un paso nuevo, vacio y apagado. esAccion=true lo crea de tipo Accion: en un paso de Mensaje las
+  // acciones del config se guardan pero Botcake no las ejecuta.
+  async crearPaso(seq, esAccion) {
+    const r = await this.post(`sequences/${seq}/message`, [['is_action', String(esAccion)]]);
+    const m = r.message || {};
+    if (!m.id) throw new Error(`No se pudo crear el paso: ${JSON.stringify(r).slice(0, 300)}`);
+    return m.id;
+  }
+
+  // Contenido de un paso de Mensaje. Cada llamada crea un flujo de respaldo nuevo y deja suelto el
+  // anterior: se llama una sola vez por paso. NUNCA en un paso de Accion (ya no se podria encender).
+  guardarPaso(seq, id, nombre, bloques) {
+    const post = {
+      id, name: nombre, key: key(10), is_published: false,
+      processed_account_id: null, processed_account_name: null, processed_date: null, scheduled_time: null,
+      config: { limit: 50, add_actions: [], audience_filter: [], message_type: 'promotional', is_action: null },
+      blocks: bloques, sequence_id: seq,
+    };
+    return this.post(`sequences/${seq}/message/${id}/create`, [['post', JSON.stringify(post)]]);
+  }
+
+  // Horario, filtro de audiencia y (en pasos de Accion) las acciones. Van por aqui y no en el
+  // contenido: ahi no se guardan. rango=[8,22] envia solo en esa franja; sin rango, a cualquier hora.
+  programarPaso(seq, id, { despues, unidad, filtro = [], acciones = [], esAccion = null, rango = null }) {
+    const config = { limit: 50, add_actions: acciones, message_type: 'promotional', is_action: esAccion,
+      filter_type: 'and', audience_filter: filtro };
+    const campos = [
+      ['schedule[after]', String(despues)],
+      ['schedule[after_type]', unidad],
+      ['schedule[sending_time_end]', String(rango ? rango[1] : 22)],
+      ['schedule[sending_time_start]', String(rango ? rango[0] : 8)],
+      ['schedule[sending_time_type]', rango ? 'timelimit' : 'anytime'],
+    ];
+    for (let i = 0; i < 7; i++) campos.push([`schedule[sending_time_weekdays][${i}]`, String(i)]);
+    campos.push(['message_id', String(id)], ['config', JSON.stringify(config)]);
+    return this.post(`sequences/${seq}/schedule`, campos);
+  }
+
+  // El interruptor «Activar» de la fila del paso. Encendido = envia mensajes reales.
+  encenderPaso(seq, id, encendido) {
+    return this.post(`sequences/${seq}/message/${id}`, [['checked', String(encendido)]]);
+  }
+
   // ---------- respaldo ----------
   // Baja a disco todos los agentes (completos) y la lista de flujos. Botcake no tiene
   // papelera: esto es lo unico que permite recuperar un prompt si algo se pisa.

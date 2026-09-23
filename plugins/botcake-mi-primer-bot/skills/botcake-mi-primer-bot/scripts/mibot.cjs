@@ -23,10 +23,18 @@
 //   mibot palabras
 //   mibot borrar-palabra <id>
 //   mibot respuestas ["nombre o telefono"]        que respondio el bot y que etiquetas puso
+//
+// Confirmacion de pedidos (lee y escribe mi-confirmacion.json):
+//   mibot plantillas                              plantillas de WhatsApp y su estado en Meta
+//   mibot crear-plantillas                        manda a Meta las dos plantillas aprobadas
+//   mibot confirmacion [--solo-ver]               monta etiquetas, flujos y secuencia, APAGADA
+//   mibot verificar-confirmacion [--encendido]    comprueba lo montado paso por paso
+//   mibot encender-confirmacion                   enciende los 3 pasos (solo con un si del usuario)
+//   mibot apagar-confirmacion                     los apaga
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { Botcake, key, medir, deSlate, indexado, SESION } = require('./_cliente.cjs');
+const { Botcake, key, medir, deSlate, indexado, dormir, SESION } = require('./_cliente.cjs');
 
 const PROY = 'mi-bot.json';
 const TOPE_PROMPT = 15000; // limite del campo Instrucciones de Botcake (documentacion oficial)
@@ -64,9 +72,9 @@ function cargarProyecto() {
   return JSON.parse(fs.readFileSync(PROY, 'utf8'));
 }
 
-function guardarProyecto(p) {
-  fs.writeFileSync(PROY + '.tmp', JSON.stringify(p, null, 2));
-  fs.renameSync(PROY + '.tmp', PROY);
+function guardarProyecto(p, archivo = PROY) {
+  fs.writeFileSync(archivo + '.tmp', JSON.stringify(p, null, 2));
+  fs.renameSync(archivo + '.tmp', archivo);
 }
 
 // ---------------------------------------------------------------- sesion
@@ -638,6 +646,419 @@ async function verificar(bc, argv) {
   return filas.every((f) => f.ok) ? 0 : 1;
 }
 
+// ---------------------------------------------------------------- confirmacion de pedidos
+// Receta medida en vivo (sep-2026): plantillas por la ruta interna, pasos por API, horario y filtro
+// por /schedule, flujos de respuesta publicados con el boton Guardar de la pantalla.
+const CONF = 'mi-confirmacion.json';
+const NOMBRE_SECUENCIA = 'Confirmación de pedidos';
+const ETIQUETAS_CONF = [['Pedido nuevo', '#f5a623'], ['R1', '#3aa0ff'], ['Confirmado', '#2ecc71'],
+  ['Asesor', '#e74c3c'], ['Sin respuesta', '#7f8c8d']];
+const PLANTILLAS_CONF = ['confirmacion', 'recordatorio'];
+
+function cargarConf() {
+  if (!fs.existsSync(CONF)) throw new Error(`No encuentro ${CONF}. Hay que hacer antes las fases 0 a 2 del recorrido de confirmacion.`);
+  return JSON.parse(fs.readFileSync(CONF, 'utf8'));
+}
+
+function tiempos(c) {
+  const t = c.tiempos || {};
+  const rango = t.desde != null && t.hasta != null ? [Number(t.desde), Number(t.hasta)] : null;
+  return { horas: Number(t.recordatorio_horas || 2), dias: Number(t.seguimiento_dias || 1), rango };
+}
+
+// Lo que Meta rechaza o Botcake no deja guardar, revisado antes de enviar nada.
+function revisarPlantilla(t, que) {
+  const e = [];
+  const n = (t.variables || []).length;
+  if (!/^[a-z0-9_]+$/.test(t.nombre || '')) e.push(`${que}: el nombre solo admite minusculas, numeros y guion bajo`);
+  const usadas = [...new Set((t.cuerpo || '').match(/\{\{\d+\}\}/g) || [])];
+  if (usadas.length !== n) e.push(`${que}: el texto tiene ${usadas.length} variables y "variables" tiene ${n}`);
+  for (let i = 1; i <= n; i++) if (!(t.cuerpo || '').includes(`{{${i}}}`)) e.push(`${que}: falta {{${i}}} en el texto`);
+  if ((t.ejemplos || []).length !== n) e.push(`${que}: hace falta un ejemplo por variable (${n})`);
+  if (/^\s*\{\{/.test(t.cuerpo || '') || /\}\}\s*$/.test(t.cuerpo || '')) e.push(`${que}: Meta rechaza un texto que empieza o termina con una variable`);
+  if (medir(t.cuerpo || '') > 1024) e.push(`${que}: el texto pasa de 1024 caracteres`);
+  if (t.encabezado && medir(t.encabezado) > 60) e.push(`${que}: el encabezado pasa de 60 caracteres`);
+  return e;
+}
+
+// Anota en mi-confirmacion.json el estado de las dos plantillas y explica lo que falta.
+// Devuelve cuantas estan listas (aprobadas como UTILITY).
+function estadoPlantillas(c, hay) {
+  const pl = c.plantillas || {};
+  let listas = 0;
+  for (const que of PLANTILLAS_CONF) {
+    const t = pl[que] || {};
+    const x = hay.find((y) => y.name === t.nombre);
+    t.estado = x ? x.status : 'NO EXISTE';
+    t.categoria = x ? x.category : '';
+    console.log(`  ${t.nombre}: ${t.estado}${x ? ', ' + x.category : ''}`);
+    if (!x) console.log('    Todavia no se ha enviado a Meta: mibot crear-plantillas');
+    else if (x.status === 'APPROVED' && x.category === 'UTILITY') listas++;
+    else if (x.status === 'APPROVED') {
+      console.log('    Meta la aprobo como MARKETING: cada envio cuesta varias veces mas y Meta limita cuantos recibe cada persona.');
+      console.log('    Hay que quitarle lo que suene a venta y mandarla otra vez con otro nombre (terminado en _2).');
+    } else if (x.status === 'REJECTED') {
+      console.log('    Meta la rechazo. Hay que corregir el texto y mandarla con otro nombre (terminado en _2).');
+    } else console.log('    Meta la esta revisando. Tarda de minutos a 48 horas.');
+  }
+  guardarProyecto(c, CONF);
+  return listas;
+}
+
+async function plantillas(bc) {
+  const hay = await bc.plantillas();
+  console.log(`Plantillas de WhatsApp en esta cuenta: ${hay.length}`);
+  for (const x of hay) console.log(`  - ${x.name} | ${x.status} | ${x.category} | ${x.language}`);
+  if (!fs.existsSync(CONF)) return 0;
+  console.log('\nLas del recorrido de confirmacion:');
+  return estadoPlantillas(cargarConf(), hay) === PLANTILLAS_CONF.length ? 0 : 1;
+}
+
+async function crearPlantillas(bc) {
+  const c = cargarConf();
+  const pl = c.plantillas || {};
+  if (!pl.aprobadas_por_el_usuario) {
+    console.log('>>> Los textos de las plantillas no estan aprobados por el usuario (plantillas.aprobadas_por_el_usuario).');
+    return 1;
+  }
+  const botones = [pl.boton_confirmar, pl.boton_modificar];
+  const errores = [];
+  for (const que of PLANTILLAS_CONF) errores.push(...revisarPlantilla(pl[que] || {}, que));
+  for (const b of botones) if (!b || medir(b) > 25) errores.push(`el boton "${b || ''}" esta vacio o pasa de 25 caracteres`);
+  if ((pl.confirmacion || {}).nombre === (pl.recordatorio || {}).nombre) errores.push('las dos plantillas tienen el mismo nombre');
+  if (errores.length) {
+    for (const e of errores) console.log(`>>> ${e}`);
+    return 1;
+  }
+  const hay = await bc.plantillas();
+  for (const que of PLANTILLAS_CONF) {
+    const t = pl[que];
+    const ya = hay.find((x) => x.name === t.nombre);
+    if (ya) { console.log(`- ${t.nombre}: ya existe en la cuenta (${ya.status}). No se vuelve a enviar.`); continue; }
+    const r = await bc.crearPlantilla(Object.assign({}, t, { botones }));
+    console.log(`- ${t.nombre}: ${r.success ? 'enviada a Meta' : 'Botcake respondio ' + JSON.stringify(r).slice(0, 200)}`);
+    await dormir(3000);
+  }
+  // Un error no garantiza que no se creo, ni un success que se creo: se lee lo que quedo.
+  console.log('\nEstado segun Meta:');
+  estadoPlantillas(c, await bc.plantillas());
+  return 0;
+}
+
+function tarjetaPlantilla(x, variables, botones) {
+  const comps = [];
+  for (const k of x.components || []) {
+    if (k.type === 'HEADER') comps.push({ type: 'HEADER', format: k.format, text: k.text, params: [] });
+    else if (k.type === 'BODY') {
+      let txt = k.text;
+      variables.forEach((v, i) => { txt = txt.split(`{{${i + 1}}}`).join(`{${v}}`); });
+      comps.push({ type: 'BODY', text: txt, example: k.example,
+        params: variables.map((v, i) => ({ key: `{{${i + 1}}}`, value: `{${v}}` })) });
+    }
+  }
+  comps.push({ type: 'BUTTONS', params: [], buttons: botones });
+  return { key: key(10), is_valid: false, is_whatsapp: true, plugin_id: 'whatsapp_message_template',
+    config: { category: x.category, id: String(x.id), language: 'es', name: x.name, components: comps } };
+}
+
+function bloqueContenido(tarjeta, kAccion) {
+  return { title: 'Contenido', coordinate: { coordinateX: 0, coordinateY: 0 }, key: key(10), message_tag: 'OTHER',
+    cards: [tarjeta], next_step: true,
+    gotos: kAccion ? { block_key: kAccion, block_type: 'action', type: 'blocks' } : {} };
+}
+
+function bloqueAccion(k, acciones, titulo) {
+  return { key: k, type: 'action', collapsed: false, coordinate: { coordinateX: 1000, coordinateY: 500 },
+    title: titulo, cards: [], gotos: {}, action: acciones };
+}
+
+// Texto del editor (Slate) con las variables como pastillas: {FIRST_NAME} del POS o {{user_full_name}}.
+function slateConVariables(texto) {
+  return texto.split('\n').map((l) => {
+    const hijos = [];
+    const re = /\{\{[a-z_]+\}\}|\{[A-Z_]+\}/g;
+    let m, ult = 0;
+    while ((m = re.exec(l))) {
+      hijos.push({ text: l.slice(ult, m.index) });
+      hijos.push({ type: 'mention', character: m[0], defaultValue: '', children: [{ text: '' }] });
+      ult = m.index + m[0].length;
+    }
+    hijos.push({ text: l.slice(ult) });
+    return { type: 'paragraph', children: hijos };
+  });
+}
+
+// Flujo de respuesta a un boton: mensaje y, enlazado a el, el bloque de acciones.
+function bloquesRespuesta(texto, acciones) {
+  const kA = key(10);
+  return [
+    { key: key(10), type: null, collapsed: false, coordinate: { coordinateX: 751, coordinateY: 233 }, title: 'Mensaje',
+      cards: [{ id: 0, key: key(10), is_valid: false, plugin_id: 'text',
+        config: { text: texto, buttons: [], rawText: slateConVariables(texto) } }],
+      next_step: true, gotos: { block_key: kA, block_type: 'action', type: 'blocks' } },
+    bloqueAccion(kA, acciones, 'Acciones'),
+  ];
+}
+
+function cuandoDias(dias) {
+  return dias === 1 ? 'Al dia siguiente' : `A los ${dias} dias`;
+}
+
+function planConfirmacion(c) {
+  const pl = c.plantillas || {};
+  const ms = c.mensajes || {};
+  const { horas, dias, rango } = tiempos(c);
+  console.log('Esto es lo que se monta (sin tocar Botcake todavia):\n');
+  console.log(`Etiquetas: ${ETIQUETAS_CONF.map((e) => e[0]).join(', ')}`);
+  console.log(`\nSecuencia «${NOMBRE_SECUENCIA}», con sus 3 pasos APAGADOS:`);
+  console.log(`  1. En cuanto entra el pedido: plantilla ${(pl.confirmacion || {}).nombre}, con los botones «${pl.boton_confirmar}» y «${pl.boton_modificar}». Pone Pedido nuevo y R1.`);
+  console.log(`  2. A las ${horas} horas${rango ? `, solo entre las ${rango[0]} y las ${rango[1]}` : ''}, y solo a quien siga con R1: plantilla ${(pl.recordatorio || {}).nombre}.`);
+  console.log(`  3. ${cuandoDias(dias)}: pone «Sin respuesta» a quien nunca contesto.`);
+  console.log('\nFlujos de respuesta:');
+  console.log(`  «${pl.boton_confirmar}» -> "${ms.gracias || ''}"`);
+  console.log('     quita Pedido nuevo y R1, pone Confirmado y lo saca de la secuencia.');
+  console.log(`  «${pl.boton_modificar}» -> "${ms.modificar || ''}"`);
+  console.log('     quita Pedido nuevo y R1, pone Asesor y lo saca de la secuencia.');
+}
+
+async function confirmacion(argv) {
+  const c = cargarConf();
+  const pl = c.plantillas || {};
+  const ms = c.mensajes || {};
+  if (!ms.gracias || !ms.modificar) throw new Error(`Faltan los textos de "mensajes" (gracias y modificar) en ${CONF}.`);
+  if (argv.includes('--solo-ver')) { planConfirmacion(c); return 0; }
+
+  const bc = new Botcake();
+  const { horas, dias, rango } = tiempos(c);
+
+  // Puerta: sin las dos plantillas aprobadas como UTILITY no se monta nada.
+  const hay = await bc.plantillas();
+  console.log('Plantillas:');
+  if (estadoPlantillas(c, hay) !== PLANTILLAS_CONF.length) {
+    console.log('\n>>> No se monta nada hasta que las dos esten aprobadas como UTILITY.');
+    return 1;
+  }
+  const tpl = {};
+  for (const que of PLANTILLAS_CONF) {
+    const x = hay.find((y) => y.name === pl[que].nombre);
+    const textos = (((x.components || []).find((k) => k.type === 'BUTTONS') || {}).buttons || []).map((b) => b.text);
+    if (!textos.includes(pl.boton_confirmar) || !textos.includes(pl.boton_modificar)) {
+      console.log(`>>> Los botones de ${x.name} en Meta (${textos.join(', ')}) no coinciden con los de ${CONF}.`);
+      return 1;
+    }
+    const cuerpo = ((x.components || []).find((k) => k.type === 'BODY') || {}).text || '';
+    const n = new Set(cuerpo.match(/\{\{\d+\}\}/g) || []).size;
+    if (n !== pl[que].variables.length) {
+      console.log(`>>> ${x.name} tiene ${n} variables en Meta y ${pl[que].variables.length} en ${CONF}.`);
+      return 1;
+    }
+    tpl[que] = x;
+  }
+
+  const m = c.montaje || (c.montaje = {});
+  m.flujos = m.flujos || {};
+  m.pasos = m.pasos || {};
+  const guardar = () => guardarProyecto(c, CONF);
+
+  const { ids: tags, reutilizadas } = await bc.asegurarEtiquetas(ETIQUETAS_CONF);
+  m.etiquetas = tags;
+  guardar();
+  if (reutilizadas.length) console.log(`\nEtiquetas que ya existian y se reutilizan: ${reutilizadas.join(', ')}`);
+  if (reutilizadas.includes('Asesor')) {
+    console.log('  «Asesor» es la misma del bot que conversa: quien toque «Modificar datos» queda marcado para una persona.');
+  }
+
+  if (!m.secuencia_id) { m.secuencia_id = await bc.crearSecuencia(NOMBRE_SECUENCIA); guardar(); }
+  const seq = m.secuencia_id;
+  // Los ids van como texto en las acciones, igual que en las cuentas donde ya funciona.
+  const T = (n) => String(tags[n]);
+  const salida = [{ action: 'remove_tag', action_id: [T('Pedido nuevo'), T('R1')] },
+    { action: 'cancel_sign_follow_sequence', action_id: String(seq) }];
+
+  // Los flujos se escriben solo al crearlos: reescribir uno ya publicado lo deja distinto del borrador.
+  const flujos = [['gracias', 'Gracias por confirmar', ms.gracias, 'Confirmado'],
+    ['modificar', 'Modificar datos del pedido', ms.modificar, 'Asesor']];
+  for (const [que, nombre, txt, etiqueta] of flujos) {
+    if (m.flujos[que]) continue;
+    const id = await bc.crearFlujo(nombre);
+    m.flujos[que] = id;
+    guardar();
+    await bc.guardarFlujo(id, nombre, bloquesRespuesta(txt, [{ action: 'add_tag', action_id: [T(etiqueta)] }, ...salida]));
+  }
+
+  const botones = (x) => (((x.components || []).find((k) => k.type === 'BUTTONS') || {}).buttons || []).map((b) => {
+    const [id, nombre] = b.text === pl.boton_confirmar ? [m.flujos.gracias, 'Gracias por confirmar'] : [m.flujos.modificar, 'Modificar datos del pedido'];
+    return { type: 'flow', text: b.text, title: b.text, key: key(10), flow_id: id, flow_name: nombre, add_actions: [] };
+  });
+
+  // Cada paso se guarda una sola vez: repetir el contenido crea flujos de respaldo sueltos.
+  const pasoMensaje = async (que, nombre, bloques, horario) => {
+    const p = m.pasos[que] || (m.pasos[que] = {});
+    if (p.listo) return;
+    if (!p.id) { p.id = await bc.crearPaso(seq, false); guardar(); }
+    const a = await bc.guardarPaso(seq, p.id, nombre, bloques);
+    const b = await bc.programarPaso(seq, p.id, horario);
+    p.listo = Boolean(a.success !== false && b.success !== false);
+    guardar();
+  };
+  const kA = key(10);
+  await pasoMensaje('confirmacion', 'Confirmación', [
+    bloqueContenido(tarjetaPlantilla(tpl.confirmacion, pl.confirmacion.variables, botones(tpl.confirmacion)), kA),
+    bloqueAccion(kA, [{ action: 'add_tag', action_id: [T('Pedido nuevo'), T('R1')] }], 'Pedido nuevo y R1'),
+  ], { despues: 1, unidad: 'immediately' });
+  await pasoMensaje('recordatorio', 'Recordatorio', [
+    bloqueContenido(tarjetaPlantilla(tpl.recordatorio, pl.recordatorio.variables, botones(tpl.recordatorio)), null),
+  ], { despues: horas, unidad: 'hours', rango,
+    filtro: [{ filter_type: 'equal', tags: [{ label: 'R1', page_id: null, tag_id: Number(tags.R1) }], title: 'Tag', type: 'tags' }] });
+
+  // Paso de Accion: se crea y se programa, sin pasar por /create (le daria un flujo de respaldo y
+  // Botcake ya no dejaria encenderlo).
+  const sr = m.pasos.sin_respuesta || (m.pasos.sin_respuesta = {});
+  if (!sr.listo) {
+    if (!sr.id) { sr.id = await bc.crearPaso(seq, true); guardar(); }
+    const r = await bc.programarPaso(seq, sr.id, { despues: dias, unidad: 'days', esAccion: true,
+      acciones: [{ action: 'add_tag', action_id: [T('Sin respuesta')] }] });
+    sr.listo = r.success !== false;
+    guardar();
+  }
+
+  c.fase_actual = Math.max(c.fase_actual || 0, 4);
+  guardar();
+  console.log(`\nSecuencia «${NOMBRE_SECUENCIA}» (numero ${seq}). Comprobando lo que quedo:\n`);
+  const ok = await verificarConfirmacion(bc, []);
+  console.log('\nSiguiente: publicar los flujos que salen como NO publicados (boton Guardar de cada uno)');
+  console.log('y repetir: mibot verificar-confirmacion');
+  return ok;
+}
+
+// Relee la secuencia y los flujos y compara con lo que tiene que haber. Con --encendido exige
+// ademas los tres pasos encendidos.
+async function verificarConfirmacion(bc, argv) {
+  const conEncendido = argv.includes('--encendido');
+  const c = cargarConf();
+  const m = c.montaje || {};
+  const pl = c.plantillas || {};
+  const tags = m.etiquetas || {};
+  const { horas, dias } = tiempos(c);
+  const filas = [];
+  const fila = (ok, que, detalle) => filas.push({ ok, que, detalle });
+  const pagina = bc.pageId;
+
+  const s = m.secuencia_id ? await bc.secuencia(m.secuencia_id) : null;
+  if (!s) {
+    console.log(`MAL Secuencia: ${m.secuencia_id ? 'no encontre la secuencia ' + m.secuencia_id : 'falta; corre mibot confirmacion'}`);
+    return 1;
+  }
+  const pasos = s.sequence_steps || [];
+  const paso = (que) => pasos.find((p) => String(p.id) === String(((m.pasos || {})[que] || {}).id));
+  const tieneTag = (lista, id) => (lista || []).map(String).includes(String(id));
+  const flujosEsperados = [m.flujos && m.flujos.gracias, m.flujos && m.flujos.modificar].map(String).sort().join(',');
+
+  for (const que of PLANTILLAS_CONF) {
+    const titulo = que === 'confirmacion' ? 'Paso 1, confirmacion' : 'Paso 2, recordatorio';
+    const p = paso(que);
+    if (!p) { fila(false, titulo, 'no existe en la secuencia'); continue; }
+    const mal = [];
+    let tarjeta = null, bloque = null;
+    for (const b of p.blocks || []) for (const k of b.cards || []) if (k.plugin_id === 'whatsapp_message_template') { tarjeta = k; bloque = b; }
+    if (!tarjeta) mal.push('no tiene plantilla');
+    else {
+      const cfg = tarjeta.config || {};
+      if (cfg.name !== pl[que].nombre) mal.push(`lleva la plantilla ${cfg.name}`);
+      const cuerpo = (cfg.components || []).find((k) => k.type === 'BODY') || {};
+      if ((cuerpo.params || []).length !== pl[que].variables.length) mal.push('variables sin enlazar al pedido');
+      const bts = ((cfg.components || []).find((k) => k.type === 'BUTTONS') || {}).buttons || [];
+      if (bts.map((b) => String(b.flow_id)).sort().join(',') !== flujosEsperados) mal.push('los botones no llevan a los flujos de respuesta');
+    }
+    const h = p.schedule || {};
+    const filtro = (p.config || {}).audience_filter || [];
+    const conR1 = filtro.some((f) => f.filter_type === 'equal' && (f.tags || []).some((t) => String(t.tag_id) === String(tags.R1)));
+    if (que === 'confirmacion') {
+      if (h.after_type !== 'immediately') mal.push(`sale a las ${h.after} ${h.after_type}, no de inmediato`);
+      if (filtro.length) mal.push('tiene un filtro de audiencia que no deberia');
+      const acc = (p.blocks || []).find((b) => b.type === 'action');
+      const pone = acc ? (acc.action || []).filter((a) => a.action === 'add_tag').flatMap((a) => a.action_id) : [];
+      const enlazada = acc && bloque && (bloque.gotos || {}).block_key === acc.key;
+      if (!enlazada || !tieneTag(pone, tags['Pedido nuevo']) || !tieneTag(pone, tags.R1)) mal.push('no pone Pedido nuevo y R1');
+    } else {
+      if (h.after_type !== 'hours' || Number(h.after) !== horas) mal.push(`sale a las ${h.after} ${h.after_type}, no a las ${horas} hours`);
+      if (!conR1) mal.push('le falta el filtro «Etiqueta igual R1»: el recordatorio le llegaria a quien ya confirmo');
+    }
+    fila(!mal.length, titulo, mal.length ? mal.join('; ') : `plantilla ${pl[que].nombre}, botones y horario bien`);
+  }
+
+  const sr = paso('sin_respuesta');
+  if (!sr) fila(false, 'Paso 3, sin respuesta', 'no existe en la secuencia');
+  else {
+    const mal = [];
+    const cfg = sr.config || {};
+    const pone = (cfg.add_actions || []).filter((a) => a.action === 'add_tag').flatMap((a) => a.action_id);
+    if (!cfg.is_action) mal.push('no es un paso de Accion (asi Botcake no ejecuta la etiqueta)');
+    if (!tieneTag(pone, tags['Sin respuesta'])) mal.push('no pone «Sin respuesta»');
+    if ((sr.schedule || {}).after_type !== 'days' || Number((sr.schedule || {}).after) !== dias) mal.push(`no sale ${cuandoDias(dias).toLowerCase()}`);
+    if (sr.flow_id) mal.push('tiene flujo de respaldo: Botcake no va a dejar encenderlo, hay que crear otro');
+    fila(!mal.length, 'Paso 3, sin respuesta', mal.length ? mal.join('; ') : `pone «Sin respuesta» ${cuandoDias(dias).toLowerCase()}`);
+  }
+
+  for (const [que, etiqueta] of [['gracias', 'Confirmado'], ['modificar', 'Asesor']]) {
+    const titulo = que === 'gracias' ? 'Flujo Gracias por confirmar' : 'Flujo Modificar datos';
+    const id = (m.flujos || {})[que];
+    if (!id) { fila(false, titulo, 'no existe'); continue; }
+    const f = await bc.flujo(id);
+    const pub = (f.blocks || []).map((b) => b.key).sort().join(',');
+    const bor = ((f.drafts || {}).blocks || []).map((b) => b.key).sort().join(',');
+    const acc = (f.blocks && f.blocks.length ? f.blocks : (f.drafts || {}).blocks || []).find((b) => b.type === 'action') || {};
+    const a = acc.action || [];
+    const mal = [];
+    if (!pub) mal.push(`NO esta publicado: abrir botcake.io/${pagina}/flows/${id}/content y pulsar Guardar`);
+    else if (pub !== bor) mal.push(`lo publicado es distinto del borrador: abrir botcake.io/${pagina}/flows/${id}/content y pulsar Actualizar`);
+    if (!a.some((x) => x.action === 'add_tag' && tieneTag(x.action_id, tags[etiqueta]))) mal.push(`no pone ${etiqueta}`);
+    if (!a.some((x) => x.action === 'remove_tag' && tieneTag(x.action_id, tags.R1))) mal.push('no quita R1');
+    if (!a.some((x) => x.action === 'cancel_sign_follow_sequence' && String(x.action_id) === String(m.secuencia_id))) mal.push('no saca a la persona de la secuencia');
+    fila(!mal.length, titulo, mal.length ? mal.join('; ') : `publicado; pone ${etiqueta}, quita Pedido nuevo y R1 y lo saca de la secuencia`);
+  }
+
+  const nuestros = ['confirmacion', 'recordatorio', 'sin_respuesta'].map(paso).filter(Boolean);
+  const encendidos = nuestros.filter((p) => p.is_published).length;
+  if (conEncendido) fila(encendidos === 3, 'Pasos encendidos', `${encendidos} de 3`);
+  else fila(true, 'Pasos encendidos', `${encendidos} de 3${encendidos ? '' : ' (apagados, como deben estar hasta que se autorice)'}`);
+
+  for (const f of filas) console.log(`${f.ok ? 'OK ' : 'MAL'} ${f.que}: ${f.detalle}`);
+  const respaldo = nuestros.filter((p) => p.flow_id).map((p) => p.flow_id);
+  if (respaldo.length) {
+    console.log(`\nFlujos de respaldo de los pasos (${respaldo.join(', ')}): no hacen falta para enviar; se publican`);
+    console.log('igual con Guardar para que la lista de flujos no quede con borradores a medias.');
+  }
+  return filas.every((f) => f.ok) ? 0 : 1;
+}
+
+async function interruptorConfirmacion(bc, encender) {
+  const c = cargarConf();
+  const m = c.montaje || {};
+  const nombres = ['Paso 1, confirmacion', 'Paso 2, recordatorio', 'Paso 3, sin respuesta'];
+  const ids = ['confirmacion', 'recordatorio', 'sin_respuesta'].map((k) => ((m.pasos || {})[k] || {}).id);
+  if (!m.secuencia_id || ids.some((x) => !x)) {
+    console.log('>>> Faltan pasos por montar. Corre antes: mibot confirmacion');
+    return 1;
+  }
+  for (const id of ids) { await bc.encenderPaso(m.secuencia_id, id, encender); await dormir(1000); }
+  const s = await bc.secuencia(m.secuencia_id);
+  const pasos = (s && s.sequence_steps) || [];
+  let bien = 0;
+  ids.forEach((id, i) => {
+    const p = pasos.find((x) => String(x.id) === String(id));
+    const esta = Boolean(p && p.is_published);
+    if (esta === encender) bien++;
+    console.log(`  ${nombres[i]}: ${esta ? 'ENCENDIDO' : 'apagado'}`);
+  });
+  c.encendido = Object.assign(c.encendido || {}, { pasos_activos: encender && bien === ids.length });
+  guardarProyecto(c, CONF);
+  if (bien === ids.length) return 0;
+  console.log(`\n>>> No quedaron todos ${encender ? 'encendidos' : 'apagados'}. Hazlo en pantalla: botcake.io/${bc.pageId}/sequence,`);
+  console.log(`    secuencia «${NOMBRE_SECUENCIA}», interruptor «Activar» de cada paso.`);
+  return 1;
+}
+
 // ---------------------------------------------------------------- main
 async function main() {
   const argv = process.argv.slice(2);
@@ -650,6 +1071,7 @@ async function main() {
   if (cmd === 'pagina') return pagina(args);
   if (cmd === 'medir') return args[0] ? medirArchivo(args[0]) : uso();
   if (cmd === 'montar') return montar(argv.slice(1));
+  if (cmd === 'confirmacion') return confirmacion(argv.slice(1));
 
   const bc = new Botcake();
   switch (cmd) {
@@ -692,6 +1114,11 @@ async function main() {
       return 0;
     }
     case 'respuestas': return respuestas(bc, args.join(' '));
+    case 'plantillas': return plantillas(bc);
+    case 'crear-plantillas': return crearPlantillas(bc);
+    case 'verificar-confirmacion': return verificarConfirmacion(bc, argv.slice(1));
+    case 'encender-confirmacion': return interruptorConfirmacion(bc, true);
+    case 'apagar-confirmacion': return interruptorConfirmacion(bc, false);
     default: return uso();
   }
 }

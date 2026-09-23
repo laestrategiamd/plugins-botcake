@@ -47,6 +47,23 @@ Deja tu pagina de Facebook o tu cuenta de Instagram contestando sola a quien com
 Se activa diciendo *quiero responder comentarios automaticamente* o *sigamos con mis
 comentarios*. No necesita billetera ni saldo: no usa inteligencia artificial.
 
+### Confirmacion de pedidos por WhatsApp (tercer recorrido)
+
+Cuando entra un pedido nuevo a tu POS de Pancake, el cliente recibe por WhatsApp los datos
+de su pedido con dos botones, «Sí, confirmar» y «Modificar datos»:
+
+1. Revisa antes que tengas lo necesario, y si falta algo no empieza.
+2. Escribe contigo los dos mensajes que revisa Meta (la confirmacion y un recordatorio) y
+   los manda a aprobar.
+3. Cuando Meta los aprueba, monta todo apagado: el recordatorio a las 2 horas para quien
+   no respondio, y las marcas «Confirmado», «Asesor» y «Sin respuesta» para tu equipo.
+4. Lo enciende solo cuando tu lo autorizas, conecta tu POS y lo prueba con un pedido a tu
+   propio numero.
+
+Se activa diciendo *quiero confirmar mis pedidos por WhatsApp* o *sigamos con mi
+confirmacion*. Necesita WhatsApp API, que tus pedidos ya lleguen al POS de Pancake y saldo
+en la billetera para enviar los mensajes.
+
 ## Que necesitas antes de empezar
 
 - Cuenta de Pancake con una pagina conectada (WhatsApp API, Facebook o Instagram). Una
@@ -54,6 +71,8 @@ comentarios*. No necesita billetera ni saldo: no usa inteligencia artificial.
 - Permisos de administrador en esa pagina.
 - Para el bot que conversa: la billetera de Pancake conectada, con saldo en Botcake AI (la
   conecta el dueno de la cuenta). Para los comentarios no hace falta.
+- Para la confirmacion de pedidos: WhatsApp API, los pedidos entrando al POS de Pancake y
+  saldo para plantillas de WhatsApp en la billetera (minimo 5 dolares).
 - Node.js instalado (`nodejs.org`, version LTS). En Windows, ademas, Git para Windows
   (`git-scm.com`).
 - La app de Claude (pestana Code) o Claude Code en tu computador.
