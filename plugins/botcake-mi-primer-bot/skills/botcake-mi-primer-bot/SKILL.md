@@ -266,6 +266,10 @@ salida.
 
 Diselo si el usuario lo pide, para que sepa donde esta el limite:
 
+- No responde comentarios de Facebook o Instagram: eso es la skill hermana
+  `botcake-comentarios`, del mismo plugin. Si el usuario quiere las dos cosas, se hacen
+  como dos recorridos separados; el de comentarios no necesita billetera.
+
 - No crea cuentas ni conecta paginas POR el usuario: las cuentas, las contrasenas y los
   pagos son de el. Lo que SI hace es acompanarlo paso a paso a hacerlo el mismo
   (`references/00b-arranque-desde-cero.md`).

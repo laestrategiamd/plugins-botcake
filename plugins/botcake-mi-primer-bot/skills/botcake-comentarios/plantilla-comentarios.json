@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "creado": "",
+  "actualizado": "",
+  "fase_actual": 0,
+  "tanda_actual": 1,
+  "requisitos": {
+    "facebook_conectado": null,
+    "instagram_conectado": null,
+    "nodejs": null,
+    "sistema": ""
+  },
+  "marca": {
+    "nombre": "",
+    "rubro": "",
+    "whatsapp": "",
+    "whatsapp_legible": "",
+    "trato": "",
+    "emojis": ""
+  },
+  "textos": {
+    "aprobados": false,
+    "publicos_facebook": [],
+    "publicos_instagram": [],
+    "privados": [],
+    "palabras_a_ocultar": [
+      "robo", "estafa", "lucrar", "lucran", "lucra", "robar", "roban", "estafan", "estafar", "asalto", "asaltar"
+    ],
+    "enlace_en_facebook": true
+  },
+  "cuentas": {
+    "facebook": {
+      "identificador": "",
+      "flujo_privado": "",
+      "montado": null,
+      "encendido": null,
+      "probado": null
+    },
+    "instagram": {
+      "identificador": "",
+      "flujo_privado": "",
+      "montado": null,
+      "encendido": null,
+      "probado": null
+    }
+  },
+  "pendientes": []
+}

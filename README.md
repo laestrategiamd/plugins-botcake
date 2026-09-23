@@ -34,12 +34,26 @@ WhatsApp, Facebook o Instagram:
 Trabaja **por tandas**: guarda el avance en un archivo y se retoma en otra sesion
 escribiendo *sigamos con mi bot*.
 
+### Respuestas automaticas a comentarios (segundo recorrido)
+
+Deja tu pagina de Facebook o tu cuenta de Instagram contestando sola a quien comenta:
+
+1. Te pregunta por tu marca y tu WhatsApp, y escribe los textos para que los apruebes.
+2. Monta la respuesta publica (seis textos que se turnan), el mensaje privado (cinco
+   versiones al azar) y la moderacion que oculta comentarios con telefonos, enlaces o
+   insultos.
+3. Lo enciende solo cuando tu lo autorizas, y te guia en la prueba desde tu cuenta.
+
+Se activa diciendo *quiero responder comentarios automaticamente* o *sigamos con mis
+comentarios*. No necesita billetera ni saldo: no usa inteligencia artificial.
+
 ## Que necesitas antes de empezar
 
 - Cuenta de Pancake con una pagina conectada (WhatsApp API, Facebook o Instagram). Una
   cuenta nueva trae 14 dias de prueba gratis: alcanzan para dejar el bot funcionando.
 - Permisos de administrador en esa pagina.
-- La billetera de Pancake conectada, con saldo (la conecta el dueno de la cuenta).
+- Para el bot que conversa: la billetera de Pancake conectada, con saldo en Botcake AI (la
+  conecta el dueno de la cuenta). Para los comentarios no hace falta.
 - Node.js instalado (`nodejs.org`, version LTS). En Windows, ademas, Git para Windows
   (`git-scm.com`).
 - La app de Claude (pestana Code) o Claude Code en tu computador.
