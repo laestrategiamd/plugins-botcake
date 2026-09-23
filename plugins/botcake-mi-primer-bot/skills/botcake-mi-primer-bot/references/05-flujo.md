@@ -22,7 +22,7 @@ Es un circulo con una salida por cada accion, y una puerta a la entrada:
    [ PUERTA: ya lo atiende una persona? ] --si--> [ no contestar ]
           | no
           v
-   [ EL AGENTE CONTESTA ]
+   [ EL AGENTE CONTESTA ] --no pudo--> [ pide que repita; al 2o fallo, pasa a una persona ]
           |
           v
    [ REVISOR: que dijo el agente? ]
@@ -34,7 +34,7 @@ Es un circulo con una salida por cada accion, y una puerta a la entrada:
     A     B     C
 ```
 
-**Las cuatro partes:**
+**Las cinco partes:**
 
 1. **La puerta.** Antes de contestar mira si la conversacion ya esta en manos de una
    persona (etiqueta `Asesor`). Si lo esta, el bot se calla. Sin esto el bot escribe
@@ -45,6 +45,9 @@ Es un circulo con una salida por cada accion, y una puerta a la entrada:
 4. **La espera.** Se queda esperando el siguiente mensaje del cliente y **vuelve a la
    puerta**, no directo al agente: asi, si a mitad de la conversacion alguien del equipo
    marco `Asesor`, el bot tambien se calla.
+5. **El limite de dos intentos.** Si el agente no logra contestar (se cae, se queda sin
+   saldo), el flujo le pide al cliente que lo repita; si falla dos veces seguidas, pasa la
+   conversacion a una persona. Sin esto el cliente se queda sin respuesta y nadie se entera.
 
 **Por que en circulo:** si el flujo terminara despues de contestar, el bot solo respondería
 un mensaje y se quedaría mudo. El circulo es lo que hace que la conversacion siga.
@@ -56,7 +59,7 @@ un mensaje y se quedaría mudo. El circulo es lo que hace que la conversacion si
 | Frase ancla | Que hace la rama |
 |-------------|------------------|
 | `PASAR A ASESOR` | Pone la etiqueta de aviso al equipo, **apaga el agente**, y manda un mensaje diciendo que ya escribe alguien |
-| `LEAD COMPLETO` | Pone la etiqueta del cliente calificado (los datos —nombre, ciudad…— ya los guardo la extraccion automatica del agente, paso 8 del montaje) |
+| `LEAD COMPLETO` | Pone la etiqueta del cliente calificado (los datos como nombre y ciudad ya los guardo la extraccion automatica del agente, paso 7 del montaje) |
 | `ENVIAR CATALOGO` | Manda la imagen o el enlace del catalogo, y el agente sigue |
 
 ⚠️ **La rama de pasar a asesor SIEMPRE apaga el agente.** Si no, el bot sigue contestando
@@ -91,6 +94,10 @@ flowchart TD
     P -->|si| S[El bot no contesta]
     P -->|no| C{{El agente contesta}}
     C --> D[Revisor: busca la frase]
+    C -->|no pudo contestar| R{Ya fallo antes?}
+    R -->|no| Q[Pide que lo repita]
+    Q --> W
+    R -->|si| H[Pasa a una persona y apaga el agente]
     D -->|PASAR A ASESOR| E[Etiqueta 'Asesor' + apaga el agente + avisa al cliente]
     D -->|LEAD COMPLETO| F[Etiqueta 'Lead']
     D -->|ninguna| W[Espera el siguiente mensaje]
@@ -120,6 +127,9 @@ Lo que el comando necesita, sacado de `mi-bot.json`:
   "Cliente calificado" no cabe, "Lead" si).
 - El identificador del agente, que sale de la Fase 7.
 
+`mibot montar` crea ademas, solo, las etiquetas `Bot`, `Asesor` e `IA sin resp` (esta
+ultima es la del limite de dos intentos).
+
 ---
 
 ## Lo que escribes en `mi-bot.json` al cerrar la Fase 4
@@ -129,6 +139,7 @@ En la seccion `flujo`, una entrada por rama:
 ```json
 "flujo": {
   "nombre": "Bot de <negocio>",
+  "mensaje_reintento": "Disculpa, no alcancé a entender tu mensaje. ¿Me lo escribes de nuevo con otras palabras?",
   "ramas": [
     {"frase": "PASAR A ASESOR", "etiqueta": "Asesor", "color": "#e74c3c",
      "apaga_agente": true, "mensaje": "En un momento te escribe alguien del equipo."},
@@ -142,3 +153,6 @@ En la seccion `flujo`, una entrada por rama:
 - `etiqueta`: maximo 15 caracteres.
 - `apaga_agente`: `true` solo cuando la conversacion pasa a una persona.
 - `mensaje`: lo que se le manda al cliente en esa rama. Vacio si no se manda nada.
+- `mensaje_reintento`: lo que dice el bot cuando no logra contestar. Escribelo en el tono
+  del negocio (de tu o de usted). Si lo dejas vacio, usa uno generico. Cuando falla dos
+  veces, el mensaje de traspaso es el mismo de la rama que apaga el agente.

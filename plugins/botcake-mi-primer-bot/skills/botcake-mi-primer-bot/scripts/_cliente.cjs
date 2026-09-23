@@ -35,7 +35,7 @@ function deSlate(slate) {
     .join('\n');
 }
 
-function cargarSesion() {
+function cargarSesion(conPagina = true) {
   if (!fs.existsSync(SESION)) {
     throw new Error(
       'No encuentro la sesion. Hay que repetir los pasos 2 y 3 de la Fase 6:\n' +
@@ -43,8 +43,11 @@ function cargarSesion() {
     );
   }
   const d = JSON.parse(fs.readFileSync(SESION, 'utf8'));
-  if (!d.token || !d.page_id) {
-    throw new Error('La sesion guardada esta incompleta. Repetir los pasos 2 y 3 de la Fase 6.');
+  if (!d.token) {
+    throw new Error('La sesion guardada no tiene la llave. Repetir los pasos 2 y 3 de la Fase 6.');
+  }
+  if (conPagina && !d.page_id) {
+    throw new Error('Falta elegir la pagina: corre "mibot paginas" y despues "mibot pagina <identificador>".');
   }
   return d;
 }
@@ -57,8 +60,8 @@ function indexado(ficha) {
 
 class Botcake {
   constructor(opts = {}) {
-    const s = opts.pageId && opts.token ? null : cargarSesion();
-    this.pageId = opts.pageId || s.page_id;
+    const s = opts.pageId && opts.token ? null : cargarSesion(!opts.sinPagina);
+    this.pageId = opts.pageId || (s && s.page_id) || null;
     this.token = opts.token || s.token;
   }
 
@@ -116,6 +119,12 @@ class Botcake {
     return this._leer(fetch(this._url(p), { method: 'POST', body: this._form(campos, archivo) }));
   }
 
+  // Paginas de la cuenta. Sirve para elegir el identificador sin mirar el trafico de red del
+  // navegador, donde cada direccion lleva la llave de sesion completa.
+  listarPaginas() {
+    return this._leer(fetch(`${BASE}?access_token=${this.token}`));
+  }
+
   // ---------- etiquetas ----------
   async etiquetas() {
     const r = await this.get('tags');
@@ -137,14 +146,26 @@ class Botcake {
     return t;
   }
 
+  // Reutiliza las etiquetas que ya existen con ese nombre. Una etiqueta que solo vive en
+  // Botcake (pancake_tag_id null) no se ve en la bandeja de Pancake, y Botcake no deja
+  // cambiarle el tipo ni crear otra con el mismo nombre: se para y se explica.
   async asegurarEtiquetas(specs) {
     const hay = new Map((await this.etiquetas()).map((t) => [t.name, t]));
-    const out = {};
+    const ids = {};
+    const reutilizadas = [];
     for (const [nombre, color] of specs) {
       const t = hay.get(nombre);
-      out[nombre] = t ? t.id : (await this.crearEtiqueta(nombre, color)).id;
+      if (t && t.pancake_tag_id === null) {
+        throw new Error(
+          `Ya existe una etiqueta "${nombre}" que solo vive en Botcake: no se ve en la bandeja de Pancake.\n` +
+            '  Botcake no deja cambiarle el tipo ni crear otra con el mismo nombre. Hay que borrarla en\n' +
+            '  Botcake (Configuracion > Etiquetas) y repetir.'
+        );
+      }
+      if (t) reutilizadas.push(nombre);
+      ids[nombre] = t ? t.id : (await this.crearEtiqueta(nombre, color)).id;
     }
-    return out;
+    return { ids, reutilizadas };
   }
 
   // ---------- campos personalizados ----------
@@ -189,6 +210,25 @@ class Botcake {
     return this.put(`ai/${id}`, [['changes', JSON.stringify(objeto)]]);
   }
 
+  // Cualquier PUT al agente puede dejar sus archivos de conocimiento SIN indice (sin
+  // openai_file_id), aunque los adjuntos y el vector_store_id sigan ahi: el bot deja de leerlos
+  // sin avisar. Se revisa cada ficha y, si falta el indice, se repite el PUT con el mismo
+  // objeto (vuelve en unos segundos). Devuelve {archivos, sinIndice[], reparado}.
+  async asegurarIndice(id, rondas = 4) {
+    let reparado = false;
+    for (let i = 0; i < rondas; i++) {
+      await dormir(6000);
+      const a = await this.agente(id);
+      const archivos = (a && a.files_library) || [];
+      const sin = archivos.filter((f) => !indexado(f));
+      if (!sin.length) return { archivos: archivos.length, sinIndice: [], reparado };
+      if (i === rondas - 1) return { archivos: archivos.length, sinIndice: sin.map((f) => f.name), reparado };
+      await this.guardarAgente(id, a);
+      reparado = true;
+    }
+    return { archivos: 0, sinIndice: [], reparado };
+  }
+
   // Escribe el prompt en LOS DOS campos donde vive y comprueba releyendo.
   // Devuelve {plano, slate, iguales, vector_antes, vector_ahora}.
   async ponerPrompt(id, texto) {
@@ -208,13 +248,14 @@ class Botcake {
       await this.guardarAgente(id, v);
       v = await this.agente(id);
     }
+    const indice = await this.asegurarIndice(id);
     const ins = v.instructions || {};
     const plano = ins.general_prompt || '';
     const slate = deSlate(ins.slate_general_prompt);
     return {
       plano: medir(plano), slate: medir(slate), iguales: plano.trim() === slate.trim(),
       vector_antes: vectorAntes, vector_ahora: (v.settings || {}).vector_store_id || null,
-      archivos: (v.files_library || []).length,
+      archivos: (v.files_library || []).length, indice,
     };
   }
 
@@ -274,16 +315,30 @@ class Botcake {
       await dormir(6000);
       const b = await this.agente(id);
       const f = (b.files_library || []).find((x) => x.id === nuevo.id);
-      if (f && indexado(f)) return f;
+      if (f && indexado(f)) {
+        // Enganchar el nuevo es otro PUT: se revisa que los demas archivos sigan con indice.
+        const indice = await this.asegurarIndice(id);
+        return Object.assign({}, f, { _indice: indice });
+      }
     }
     return null;
   }
 
-  async quitarKb(id, dejarSoloId) {
+  // Desengancha del agente UN archivo, por su id. La biblioteca de la pagina lo conserva.
+  async quitarKb(id, archivoId) {
     const a = await this.agente(id);
-    a.files_library = (a.files_library || []).filter((x) => x.id === dejarSoloId);
+    if (!a) throw new Error(`No encontre el agente ${id}.`);
+    const antes = a.files_library || [];
+    if (!antes.some((x) => String(x.id) === String(archivoId))) {
+      throw new Error(`El agente no tiene enganchado el archivo ${archivoId}. Los ids salen en: mibot ver-agente ${id}`);
+    }
+    if (antes.length === 1) {
+      throw new Error('Es el unico archivo del agente: si se quita, el bot se queda sin base de conocimiento. Sube primero la version nueva.');
+    }
+    a.files_library = antes.filter((x) => String(x.id) !== String(archivoId));
     await this.guardarAgente(id, a);
-    return ((await this.agente(id)).files_library || []).length;
+    const indice = await this.asegurarIndice(id);
+    return { quedan: indice.archivos, indice };
   }
 
   // Extraccion automatica de datos a campos personalizados (settings.informations).
@@ -293,8 +348,9 @@ class Botcake {
     a.settings = a.settings || {};
     a.settings.informations = items;
     await this.guardarAgente(id, a);
+    const indice = await this.asegurarIndice(id);
     const v = await this.agente(id);
-    return ((v.settings || {}).informations || []).length;
+    return { n: ((v.settings || {}).informations || []).length, indice };
   }
 
   // Prueba rapida del agente sin navegador. Cuesta centavos de la billetera.
@@ -336,6 +392,12 @@ class Botcake {
 
   async flujo(id) {
     return (await this.get(`flow/${id}`)).flow || {};
+  }
+
+  // A que flujo apunta la Respuesta predeterminada. El puntero no esta en los ajustes: se lee
+  // con get_contents. La forma exacta de la respuesta no esta documentada; se busca el id.
+  respuestaPredeterminada() {
+    return this.get('get_contents?type=default');
   }
 
   // ---------- clientes (para leer lo que respondio el bot) ----------

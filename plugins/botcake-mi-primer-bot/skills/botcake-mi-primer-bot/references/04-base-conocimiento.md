@@ -5,7 +5,7 @@ alguien le pregunta algo.
 
 **Se separa del prompt por una razon practica:** los precios cambian cada mes; las
 instrucciones casi nunca. Cambiar un precio tiene que ser abrir un archivo, cambiar una
-linea y volverlo a subir — no reescribir el bot.
+linea y volverlo a subir, sin reescribir el bot.
 
 ---
 
@@ -42,7 +42,7 @@ R: 12.000 pesos. Gratis en compras desde 150.000 pesos.
 ## La estructura del archivo
 
 ```
-# [NOMBRE DEL NEGOCIO] — Informacion para atencion
+# [NOMBRE DEL NEGOCIO]: Informacion para atencion
 # Actualizado: [fecha]
 
 ## 1. QUIENES SOMOS
@@ -74,6 +74,17 @@ explicito. Sin esto, el bot rellena huecos inventando.
 - **Un dato en un solo sitio.** Si el horario esta en la seccion 5 y otra vez en las
   preguntas frecuentes, algun dia van a decir cosas distintas.
 - **Lo que no se sabe, no se escribe.** Va a la lista de PENDIENTES de `mi-bot.json`.
+- **Cada producto con los nombres que usa la gente**, no solo el oficial. Si la base dice
+  "Plan Emprendedor" y el cliente pregunta por "el plan mas barato", el bot tiene que poder
+  encontrarlo. Un bot real nego que existiera un producto porque la base no lo nombraba
+  como lo decian los clientes.
+- **Si cambia una regla, cambian todas sus cifras.** Si el envio gratis paso de 150.000 a
+  200.000, busca 150.000 en todo el archivo. Un bot con la regla nueva y la cifra vieja
+  cotiza mal.
+- **Nada de instrucciones de comportamiento** ("responde siempre...", "no digas..."): eso va
+  en el prompt. Una instruccion en la base puede contradecir al prompt, y el bot obedece a
+  la que encuentre.
+- **Sin raya (—) ni punto medio (·):** el bot los copia en sus mensajes.
 
 ---
 
@@ -108,6 +119,7 @@ prompt se le dice que los productos los consulta en el catalogo.
 4. Todas las preguntas frecuentes escritas como las escribiria un cliente, no como las
    escribiria el dueno.
 5. Fechas absolutas, no relativas.
+6. Cada producto aparece tambien con el nombre con que lo pide la gente.
 
 Guardala como `conocimiento-<negocio>.txt` y dile la ruta al usuario. No la pegues en el
 chat.

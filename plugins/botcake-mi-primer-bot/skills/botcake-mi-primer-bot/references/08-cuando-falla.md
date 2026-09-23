@@ -122,6 +122,28 @@ guia ya no se parece a la que ve el usuario.
 
 ---
 
+## Un paso se frena y no aparece ninguna solicitud de permiso
+
+Es el modo de permisos Auto de la app de Claude: bloquea en silencio algunas acciones con
+credenciales (como guardar la llave de sesion). Pidele al usuario que cambie el selector de
+permisos (al lado del boton de enviar) a **Manual**, que apruebe ese paso cuando se lo
+pregunte, y que despues vuelva a **Auto**.
+
+---
+
+## El bot dejo de contestar de golpe
+
+Casi siempre es el saldo. Que mire en Botcake > Configuracion > Facturacion la linea
+**BOTCAKE AI** de la cuenta prepago: en cero, la IA se calla sin avisar. En un bot real
+paso casi 9 horas, con la recarga automatica configurada.
+
+Si hay saldo: `mibot verificar --encendido`. Si la base sale sin indice, el comando la
+repara; si la Respuesta predeterminada ya no apunta al flujo, alguien la cambio. Y
+`mibot respuestas`: si muchas conversaciones tienen la etiqueta `IA sin resp`, el agente
+esta fallando.
+
+---
+
 ## El bot ya esta encendido y responde mal
 
 Primero se apaga, despues se arregla. En ese orden.
@@ -132,10 +154,11 @@ Con el bot apagado, se mira que fallo:
 
 | Sintoma | Donde esta el problema |
 |---------|------------------------|
-| Da datos errados o inventa precios | Base de conocimiento (`04-base-conocimiento.md`), o el archivo nuevo no quedo indexado (`mibot ver-conocimiento`) |
+| Da datos errados o inventa precios | Base de conocimiento (`04-base-conocimiento.md`), o el archivo perdio su indice (`mibot verificar` lo revisa y lo repara) |
+| Contesta a menudo que no alcanzo a entender | El agente esta fallando: saldo de Botcake AI, o `mibot verificar` |
 | Repite preguntas que ya hizo | El historial de chat esta apagado (paso 9 del montaje) |
 | Ignora reglas del prompt que antes cumplia | El agente quedo en modo Rapido (paso 9 del montaje): puede pasar al escribir el prompt o la KB por comando |
 | No avisa al equipo, no pone etiquetas | La frase ancla del prompt no coincide **exactamente** con la que busca el revisor, o el prompt dice que "el sistema" lo hace |
 | Contesta encima de un asesor | La rama de escalado no apaga el agente, o la pausa tras respuesta humana esta apagada |
-| No guarda el nombre ni la ciudad del cliente | La extraccion de datos no quedo configurada (paso 8 del montaje) |
+| No guarda el nombre ni la ciudad del cliente | La extraccion de datos no quedo configurada (paso 7 del montaje) |
 | Habla en otro tono del que se pidio | Prompt (`03-prompt.md`), seccion COMO HABLAS; mira si copio un ejemplo como guion |

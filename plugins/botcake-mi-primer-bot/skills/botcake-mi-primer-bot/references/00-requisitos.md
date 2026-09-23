@@ -51,6 +51,12 @@ configuracion**: no deja escribir el prompt, ni subir archivos, ni elegir el mod
 *Instruccion*, *Herramientas*, *Conocimiento* y *Comportamiento*, esta conectada. Si ve el
 aviso de conectar la billetera, no lo esta.
 
+**Y el saldo.** Conectada no quiere decir con saldo. En Botcake > **Configuracion >
+Facturacion** (la direccion termina en `/settings/billing`) sale la cuenta prepago con una
+linea **BOTCAKE AI**. Si esta en cero, el bot no contesta y la base de conocimiento no se
+indexa, sin ningun aviso. Si esta en cero o casi, que recargue antes de seguir. La recarga
+automatica existe, pero no siempre salta: hay que mirarla cada semana.
+
 **Si no lo esta:** lo tiene que conectar **el dueno de la cuenta**, porque es un tema de
 facturacion — se le va a cobrar el consumo del bot ahi. No lo hagas tu ni le pidas datos de
 pago. Si el dueno es la persona que tienes al frente, los pasos para crear la billetera

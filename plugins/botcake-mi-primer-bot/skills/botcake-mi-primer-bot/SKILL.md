@@ -215,16 +215,18 @@ no haya un dato en dos sitios con dos valores distintos. Y mides el prompt con
 
 Abres Botcake en el navegador automatizado y **el usuario inicia sesion el mismo**. Tu no
 le pides usuario ni contrasena. Una vez dentro, guardas la llave de sesion en un archivo
-local, verificas que funciona, y **bajas un respaldo de lo que ya hay en la cuenta** antes
-de escribir nada (Botcake no tiene papelera).
+local (sin mostrarla nunca en el chat), el usuario elige su pagina por el nombre, verificas
+que funciona, y **bajas un respaldo de lo que ya hay en la cuenta** antes de escribir nada
+(Botcake no tiene papelera).
 
 ### Fase 7 — Montar el bot
 
 **Abre:** `references/06-montaje.md` (completo)
 
-En este orden: el agente vacio (lo crea el usuario con tres clics), el prompt, la base de
-conocimiento, la extraccion de datos, los ajustes del agente (usuario), y el flujo. Casi
-todo lo haces tu con `mibot`; el usuario solo pone las manos donde la plataforma no deja
+En este orden: el saldo, el agente vacio (lo crea el usuario con tres clics), el prompt,
+la extraccion de datos, la base de conocimiento, los ajustes del agente (usuario), el flujo
+(el usuario lo publica con un clic) y `mibot verificar`, que lo revisa todo. Casi todo lo
+haces tu con `mibot`; el usuario solo pone las manos donde la plataforma no deja
 otra salida. **Despues de cada paso compruebas que quedo hecho de verdad** — Botcake dice
 "listo" en varios sitios donde no guardo nada.
 
@@ -243,8 +245,8 @@ de prueba, para ver el flujo completo: etiquetas, traspaso a persona, apagado. L
 las respuestas del bot, una por una, y las revisan juntos. Lo que este mal se corrige y se
 vuelve a probar.
 
-Cuando el usuario apruebe, **entonces** se conecta el punto de entrada y el bot queda
-atendiendo. Le entregas al final un resumen de que quedo montado y como apagarlo si algo
+Cuando el usuario apruebe, **entonces** se conecta el punto de entrada, se comprueba con
+`mibot verificar --encendido`, y el bot queda atendiendo. Le entregas al final un resumen de que quedo montado y como apagarlo si algo
 sale mal.
 
 ---

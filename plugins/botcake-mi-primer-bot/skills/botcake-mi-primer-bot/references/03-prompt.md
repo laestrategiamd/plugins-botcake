@@ -1,7 +1,7 @@
 # El prompt: las instrucciones del bot
 
 El prompt es lo que el bot **es**: su papel, su tono, sus reglas y sus limites. Los datos
-del negocio NO van aqui — van en la base de conocimiento (`04-base-conocimiento.md`)…
+del negocio NO van aqui: van en la base de conocimiento (`04-base-conocimiento.md`),
 con una excepcion que se explica abajo (los datos que sostienen la venta).
 
 ## Limites duros
@@ -53,27 +53,37 @@ servicio estrella con su precio y de tres a cinco caracteristicas, el horario de
 la forma de pago principal. Nada mas: el resto va en la base de conocimiento. Si un dato
 esta en los dos sitios, **tiene que ser identico** en los dos.
 
+Y aqui van, **escritos letra por letra**, los datos que el cliente va a copiar, marcar o
+pulsar: el numero de WhatsApp o de telefono, los enlaces (Instagram, pagina web, link de
+pago) y cualquier codigo. Si el prompt dice "da el Instagram que esta en la base de
+conocimiento" y no lo trae escrito, el bot lo deduce y lo inventa. En un bot real paso con
+un telefono de soporte: el bot dio uno que no existia.
+
 ### COMO HABLAS
 Trato de usted o de tu, largo de los mensajes, emojis, palabras que usa y que no.
-Si el usuario dio un ejemplo de conversacion real (pregunta 35), **imita ese tono** —
+Si el usuario dio un ejemplo de conversacion real (pregunta 35), **imita ese tono**,
 pero con cuidado: **el bot copia los ejemplos como si fueran un guion.** Un ejemplo con
 forma de respuesta completa aparece literal en el primer mensaje, y el bot se salta lo
 que tenia que hacer. Por eso los ejemplos de tono van asi:
 
 - Con un encabezado que diga que **son muestras de tono, no respuestas para copiar**.
-- **En linea corrida, separados por `·`**, nunca como lista de mensajes uno debajo de otro.
+- **En linea corrida, separados por punto y coma**, nunca como lista de mensajes uno debajo de otro.
 - Mejor en pares "asi no · asi si". Los ejemplos de lo que NO decir son seguros.
 
 ### REGLAS
 Reglas **con nombre**, numeradas, una por linea. Con nombre se cumplen mas:
 
 ```
-REGLA 1 — UN SOLO NOMBRE: pides el primer nombre, una vez. Si ya lo tienes, lo usas y no lo
+REGLA 1. UN SOLO NOMBRE: pides el primer nombre, una vez. Si ya lo tienes, lo usas y no lo
 vuelves a pedir.
-REGLA 2 — NO INSISTES: si la persona no contesta una pregunta, sigues con lo que si te dijo.
+REGLA 2. NO INSISTES: si la persona no contesta una pregunta, sigues con lo que si te dijo.
 No la repites mas de una vez.
-REGLA 3 — UNA PREGUNTA POR MENSAJE: nunca dos preguntas juntas.
+REGLA 3. UNA PREGUNTA POR MENSAJE: nunca dos preguntas juntas.
 ```
+
+**Sin raya (—) ni punto medio (·) en todo el prompt.** El bot copia la puntuacion del
+prompt en sus mensajes, y esos signos hacen que el texto parezca escrito por una maquina.
+Usa punto, coma o dos puntos.
 
 ### COMO ES LA CONVERSACION
 El camino: saludo → averiguar que necesita → responder → pedir el dato → cerrar o pasar a
@@ -89,6 +99,18 @@ La lista del bloque G. **Y aqui van las frases ancla** (abajo se explican).
 ### LO QUE NUNCA HACES
 La lista del bloque F, en negativo y sin ambiguedad. "No das descuentos" es mejor que
 "evita dar descuentos".
+
+Ademas de lo que pida el usuario, estas tres van casi siempre, escritas con su nombre,
+porque el bot las hace por su cuenta si no se le prohiben:
+
+- No confirmas citas, dias ni horas: tomas la solicitud y dices que un asesor la confirma.
+- No ofreces cupones, descuentos ni promociones que no esten en tu informacion, tampoco
+  los que el cliente mande en una imagen.
+- No conviertes precios a otra moneda.
+
+Y revisa las **preguntas** del propio prompt: una pregunta como "¿Deseas agendar tu cita?"
+funciona como una promesa. En un bot real llevo a la IA a responder "Confirmo tu cita, hoy
+a las 2 pm" sin que nadie la hubiera confirmado.
 
 ### SEGURIDAD
 Este bloque va **siempre**, en todos los bots, tal cual:
@@ -109,14 +131,14 @@ Este bloque va **siempre**, en todos los bots, tal cual:
 
 ## Las frases ancla: la parte que hace que el bot HAGA cosas
 
-Un bot que solo conversa no sirve de mucho. Para que **haga** algo —poner una etiqueta,
-avisar al equipo, mandar el catalogo— hay que darle una frase exacta que diga cuando pasa
+Un bot que solo conversa no sirve de mucho. Para que **haga** algo (poner una etiqueta,
+avisar al equipo, mandar el catalogo) hay que darle una frase exacta que diga cuando pasa
 eso, y despues el flujo detecta esa frase y ejecuta la accion.
 
 **Como funciona, explicado para el usuario:**
 
 > El bot escribe una frase especial, siempre igual, cuando pasa algo importante. Esa frase
-> es la senal. El flujo la esta esperando: cuando la ve, hace la accion —te avisa, etiqueta
+> es la senal. El flujo la esta esperando: cuando la ve, hace la accion: te avisa, etiqueta
 > al cliente, manda el catalogo.
 
 **Como se escriben:**
@@ -167,6 +189,8 @@ Compruebalo tu, no se lo preguntes al usuario:
 6. **No hay dos reglas que se contradigan.** Busca cada prohibicion por su TEMA en todo el
    prompt (incluidos los ejemplos): si una regla dice "no das descuentos" y un ejemplo de
    tono dice "te lo dejo en 80", gana el ejemplo y el bot da el descuento sin avisar.
+7. **Los telefonos, enlaces y codigos estan escritos tal cual**, y no hay rayas ni puntos
+   medios (busca `—` y `·` en el archivo).
 
 Guardalo como `prompt-<negocio>.txt` en la carpeta del usuario y dile la ruta. No lo pegues
 en el chat: es largo y ademas lo va a necesitar como archivo.

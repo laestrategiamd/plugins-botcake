@@ -58,7 +58,10 @@
   },
   "estilo": {
     "datos_a_capturar": [
-      {"campo": "Nombre", "instruccion": "El primer nombre del cliente, como lo dijo el. Si no lo dijo, vacio."}
+      {
+        "campo": "Nombre",
+        "instruccion": "El primer nombre del cliente, como lo dijo el. Si no lo dijo, vacio."
+      }
     ],
     "trato": "",
     "emojis": "",
@@ -76,6 +79,7 @@
   },
   "flujo": {
     "nombre": "",
+    "mensaje_reintento": "",
     "ramas": [
       {
         "frase": "PASAR A ASESOR",
@@ -103,6 +107,7 @@
     "etiquetas": {},
     "campos": {},
     "flujo_id": "",
+    "publicado": null,
     "palabra_prueba": "",
     "palabra_prueba_id": "",
     "punto_de_entrada": null,
