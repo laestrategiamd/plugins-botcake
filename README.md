@@ -20,7 +20,7 @@ Despues, abre una sesion nueva. Funciona en Mac y en Windows.
 
 ## Que hay aqui
 
-### `botcake-mi-primer-bot`
+### Mi primer bot con Pancake (`botcake-mi-primer-bot`)
 
 Te acompana desde cero hasta tener un bot con inteligencia artificial respondiendo en tu
 WhatsApp, Facebook o Instagram:
