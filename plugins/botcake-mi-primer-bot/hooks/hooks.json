@@ -1,0 +1,18 @@
+{
+  "description": "Avisa al abrir una sesion si hay una version nueva del plugin publicada en GitHub",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/revisar-version.cjs"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

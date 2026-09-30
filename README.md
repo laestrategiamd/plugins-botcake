@@ -18,6 +18,19 @@ claude plugin install botcake-mi-primer-bot@la-estrategia
 
 Despues, abre una sesion nueva. Funciona en Mac y en Windows.
 
+Cada vez que abres una sesion, el plugin revisa si hay una version nueva publicada y, si
+la hay, te lo avisa para que la actualices:
+
+```
+claude plugin marketplace update la-estrategia
+```
+
+```
+claude plugin update botcake-mi-primer-bot@la-estrategia
+```
+
+Volver a instalarlo no lo actualiza: responde que ya esta instalado y deja la version vieja.
+
 ## Que hay aqui
 
 ### Mi primer bot con Pancake (`botcake-mi-primer-bot`)
