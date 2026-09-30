@@ -24,7 +24,10 @@
     "publicos_instagram": [],
     "privados": [],
     "palabras_a_ocultar": [
-      "robo", "estafa", "lucrar", "lucran", "lucra", "robar", "roban", "estafan", "estafar", "asalto", "asaltar"
+      "robo", "robar", "roban", "estafa", "estafar", "estafan", "asalto", "asaltar", "lucrar", "lucra", "lucran", "ladrón", "ladron", "ladrones", "ladrona", "rateros", "estafadores", "me estafaron", "me robaron", "fraude", "me tumbaron", "tumbada", "sinvergüenzas", "sinverguenzas", "descarados", "mentirosos", "malandros", "no compren", "no les compren", "no caigan", "cuidado con esta página", "cuidado con esta pagina", "publicidad engañosa", "publicidad enganosa", "engaño", "engano",
+      "no funciona", "no sirvió", "no sirvio", "no me sirvió", "no me sirvio", "se dañó", "se daño", "se desbarató", "se desbarato", "mala calidad", "pésimo", "pesimo", "pésima", "pesima", "malísimo", "malisimo", "porquería", "porqueria", "basura", "penca", "chimbo", "bamba", "falsificado", "no es lo que muestran", "no se parece a la foto", "decepcionado", "decepcionada",
+      "nunca llegó", "nunca llego", "no me llegó", "no me llego", "no responden", "no contestan", "me dejaron esperando", "perdí mi plata", "perdi mi plata", "plata botada", "devuélvanme la plata", "devuelvanme la plata", "quiero mi reembolso",
+      "en otro sitio está más barato", "en otro sitio esta mas barato", "en otro lado está más barato", "en otro lado esta mas barato", "más barato en otra tienda", "mas barato en otra tienda", "carísimo", "carisimo", "abusivos", "sobreprecio"
     ],
     "enlace_en_facebook": true
   },

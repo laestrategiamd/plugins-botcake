@@ -54,7 +54,7 @@ Deja tu pagina de Facebook o tu cuenta de Instagram contestando sola a quien com
 1. Te pregunta por tu marca y tu WhatsApp, y escribe los textos para que los apruebes.
 2. Monta la respuesta publica (seis textos que se turnan), el mensaje privado (cinco
    versiones al azar) y la moderacion que oculta comentarios con telefonos, enlaces o
-   insultos.
+   palabras de queja (y bloquea a quien escribe esas palabras).
 3. Lo enciende solo cuando tu lo autorizas, y te guia en la prueba desde tu cuenta.
 
 Se activa diciendo *quiero responder comentarios automaticamente* o *sigamos con mis

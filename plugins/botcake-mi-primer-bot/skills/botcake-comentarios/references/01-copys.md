@@ -117,13 +117,24 @@ Privado, version 1:
 
 ## Las palabras que se ocultan
 
-Los comentarios que traen estas once palabras se ocultan, y ademas se bloquea a quien las
-escribe y se elimina el comentario:
+Los comentarios que traen alguna de estas palabras **se ocultan y se bloquea a quien los
+escribe. No se borran.** Son acusaciones de robo o estafa y
+las quejas que mas se leen en Colombia y Venezuela; las que llevan tilde van tambien sin
+tilde, porque en los comentarios mucha gente escribe sin tildes:
 
-`robo, estafa, lucrar, lucran, lucra, robar, roban, estafan, estafar, asalto, asaltar`
+- **Robo o estafa:** robo, robar, roban, estafa, estafar, estafan, asalto, asaltar, lucrar, lucra, lucran, ladrón, ladron, ladrones, ladrona, rateros, estafadores, me estafaron, me robaron, fraude, me tumbaron, tumbada, sinvergüenzas, sinverguenzas, descarados, mentirosos, malandros, no compren, no les compren, no caigan, cuidado con esta página, cuidado con esta pagina, publicidad engañosa, publicidad enganosa, engaño, engano
+- **Producto:** no funciona, no sirvió, no sirvio, no me sirvió, no me sirvio, se dañó, se daño, se desbarató, se desbarato, mala calidad, pésimo, pesimo, pésima, pesima, malísimo, malisimo, porquería, porqueria, basura, penca, chimbo, bamba, falsificado, no es lo que muestran, no se parece a la foto, decepcionado, decepcionada
+- **Entrega y atención:** nunca llegó, nunca llego, no me llegó, no me llego, no responden, no contestan, me dejaron esperando, perdí mi plata, perdi mi plata, plata botada, devuélvanme la plata, devuelvanme la plata, quiero mi reembolso
+- **Precio:** en otro sitio está más barato, en otro sitio esta mas barato, en otro lado está más barato, en otro lado esta mas barato, más barato en otra tienda, mas barato en otra tienda, carísimo, carisimo, abusivos, sobreprecio
 
-Preguntale al usuario si en su pais o rubro hay otras que quiera sumar (por ejemplo
-insultos locales). Se guardan en `mis-comentarios.json` (`textos.palabras_a_ocultar`).
+Ensenale la lista al usuario y dile, con estas palabras: *"quien escriba una de estas
+palabras queda bloqueado en tu pagina y su comentario se oculta. Si alguna la usan tus
+clientes para preguntar algo normal, la quitamos."* Preguntale tambien si en su pais o
+rubro hay otras que quiera sumar. Se guardan en `mis-comentarios.json`
+(`textos.palabras_a_ocultar`).
+
+Al sumar palabras, revisa que ninguna quede escondida dentro de una palabra normal: por eso
+no estan «ratas» (esta dentro de «baratas») ni «timo» (esta dentro de «ultimo»).
 
 ---
 

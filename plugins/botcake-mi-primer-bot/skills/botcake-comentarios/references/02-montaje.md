@@ -117,15 +117,17 @@ si aparece, se deja apagado.
 
 1. Enciende **Comentarios con numero de telefono**.
 2. Enciende **Comentarios contienen palabra clave**. Aparece una casilla para escribir:
-   teclea cada palabra de la lista aprobada y pulsa Enter despues de cada una (once, o las
-   que haya en `mis-comentarios.json`). Enciende **Bloquear usuario que comenta la palabra
-   clave** y **Eliminar comentario que incumple las normas**.
+   teclea cada palabra de la lista aprobada y pulsa Enter despues de cada una (todas las
+   de `mis-comentarios.json`). Enciende **Bloquear usuario que comenta la palabra clave** y
+   deja **apagado** **Eliminar comentario que incumple las normas**: el comentario se oculta,
+   no se borra.
 3. Enciende **Comentarios contienen enlace** y deja marcado "Todos los enlaces".
 4. "Ocultar todos los comentarios" y "Comentarios con imagenes, video, sticker o GIF" se
    quedan apagados.
 
-**Comprueba:** vuelve a leer la pantalla y confirma los interruptores encendidos y las
-palabras cargadas.
+**Comprueba:** vuelve a leer la pantalla y confirma los interruptores encendidos, que
+«Eliminar comentario» quedo apagado, y que estan cargadas todas las palabras (cuentalas
+contra la lista).
 
 ---
 

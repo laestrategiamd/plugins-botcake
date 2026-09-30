@@ -4,7 +4,7 @@ description: >
   Monta, de principio a fin, las respuestas automaticas a los comentarios de una pagina de
   Facebook o una cuenta de Instagram en Botcake (ecosistema Pancake): una respuesta publica
   que rota entre seis textos, un mensaje privado a quien comenta con cinco variantes al
-  azar, y la moderacion que oculta comentarios con telefonos, enlaces o insultos. Usala
+  azar, y la moderacion que oculta comentarios con telefonos, enlaces o palabras de queja. Usala
   cuando el usuario diga "responder comentarios automaticamente", "comentarios de
   Facebook", "comentarios de Instagram", "que me escriban al WhatsApp desde los
   comentarios", "mensaje automatico a quien comenta", "ocultar comentarios con telefono",
@@ -37,7 +37,8 @@ ensenaselo.
 >    se elige una al azar.
 > 3. **Se ocultan los comentarios que te hacen dano**: los que traen un numero de telefono
 >    (para que la competencia no se lleve a tu cliente), los que traen enlaces y los que
->    traen insultos o palabras como "estafa".
+>    traen palabras de queja o de acusacion, como "estafa", "no funciona" o "pesimo". A
+>    quien escribe una de esas palabras, ademas, se le bloquea en tu pagina.
 
 ---
 
