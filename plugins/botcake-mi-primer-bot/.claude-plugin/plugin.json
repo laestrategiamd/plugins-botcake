@@ -1,8 +1,8 @@
 {
   "name": "botcake-mi-primer-bot",
   "displayName": "Mi primer bot con Pancake",
-  "version": "0.7.1",
-  "description": "Asistente guiado para construir, montar y encender tus primeros bots en Botcake (ecosistema Pancake): un agente de IA que conversa, las respuestas automaticas a comentarios de Facebook e Instagram, y la confirmacion de pedidos por WhatsApp.",
+  "version": "0.8.0",
+  "description": "Asistente guiado para construir, montar y encender tus primeros bots en Botcake (ecosistema Pancake): un agente de IA que conversa, las respuestas automaticas a comentarios de Facebook e Instagram, la confirmacion de pedidos por WhatsApp y la revision de salud de tu numero de WhatsApp ante Meta.",
   "author": {
     "name": "Luis Manuel Diaz",
     "email": "luismanuel@laestrategia.agency",

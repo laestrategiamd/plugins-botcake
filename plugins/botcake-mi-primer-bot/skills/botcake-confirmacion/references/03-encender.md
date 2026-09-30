@@ -152,6 +152,9 @@ Un resumen corto en el chat:
 - **Que revisar cada semana:** el saldo de la cuenta prepago (sin saldo no sale ningun
   mensaje y nadie avisa) y cuantos quedan en `Sin respuesta` (si son casi todos, los
   mensajes no estan llegando).
+- **A la semana de encenderlo:** que abra Claude Code en la misma carpeta y pida la revision
+  de salud de su WhatsApp (skill `botcake-salud-whatsapp`): confirma que los mensajes no le
+  estan bajando la calificacion al numero.
 - **Cambiar un texto:** los de gracias y modificar se cambian en Botcake (abrir el flujo,
   editar el texto, **Actualizar**); que abra Claude Code en la misma carpeta y te lo pida.
   Cambiar una plantilla ya aprobada es otra revision de Meta y rehacer el paso: este

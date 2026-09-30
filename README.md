@@ -64,6 +64,20 @@ Se activa diciendo *quiero confirmar mis pedidos por WhatsApp* o *sigamos con mi
 confirmacion*. Necesita WhatsApp API, que tus pedidos ya lleguen al POS de Pancake y saldo
 en la billetera para enviar los mensajes.
 
+### Revision de salud de tu WhatsApp (cuarto recorrido)
+
+Revisa si tu numero de WhatsApp esta sano ante Meta, que puede bajarle la calificacion o
+llevar a una restriccion, y que hacer:
+
+1. Te pregunta que paso, si vienes con un problema, y te guia a mirar la calificacion de tu
+   numero en Meta.
+2. Revisa lo que tienes montado en Botcake (plantillas, secuencias, difusiones, el bot) en
+   siete puntos, sin que tengas que exportar nada.
+3. Te da el diagnostico en palabras sencillas y un plan por orden. No cambia nada sin tu
+   permiso.
+
+Se activa diciendo *revisa que mi WhatsApp este bien* o *mi WhatsApp tiene calidad baja*.
+
 ## Que necesitas antes de empezar
 
 - Cuenta de Pancake con una pagina conectada (WhatsApp API, Facebook o Instagram). Una
