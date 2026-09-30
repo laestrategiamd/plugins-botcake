@@ -58,9 +58,13 @@ un mensaje y se quedaría mudo. El circulo es lo que hace que la conversacion si
 
 | Frase ancla | Que hace la rama |
 |-------------|------------------|
-| `PASAR A ASESOR` | Pone la etiqueta de aviso al equipo, **apaga el agente**, y manda un mensaje diciendo que ya escribe alguien |
-| `LEAD COMPLETO` | Pone la etiqueta del cliente calificado (los datos como nombre y ciudad ya los guardo la extraccion automatica del agente, paso 7 del montaje) |
-| `ENVIAR CATALOGO` | Manda la imagen o el enlace del catalogo, y el agente sigue |
+| "te conecto con una persona del equipo" | Pone la etiqueta de aviso al equipo y **apaga el agente**. No manda otro mensaje: el agente ya se lo dijo al cliente con esa frase |
+| "ya quedaron anotados tus datos" | Pone la etiqueta del cliente calificado (los datos como nombre y ciudad ya los guardo la extraccion automatica del agente, paso 7 del montaje) |
+| "te comparto el catalogo" | Manda la imagen o el enlace del catalogo, y el agente sigue |
+
+Las frases van **dentro del mensaje normal** del agente: el cliente lee "Claro, te conecto
+con una persona del equipo", no un codigo. Nunca en mayusculas ni en una linea suelta
+(`03-prompt.md`, seccion de frases ancla).
 
 ⚠️ **La rama de pasar a asesor SIEMPRE apaga el agente.** Si no, el bot sigue contestando
 por encima de la persona que entro a atender. Es el error que mas molesta a los equipos.
@@ -98,8 +102,8 @@ flowchart TD
     R -->|no| Q[Pide que lo repita]
     Q --> W
     R -->|si| H[Pasa a una persona y apaga el agente]
-    D -->|PASAR A ASESOR| E[Etiqueta 'Asesor' + apaga el agente + avisa al cliente]
-    D -->|LEAD COMPLETO| F[Etiqueta 'Lead']
+    D -->|"te conecto con una persona del equipo"| E[Etiqueta 'Asesor' + apaga el agente]
+    D -->|"ya quedaron anotados tus datos"| F[Etiqueta 'Lead']
     D -->|ninguna| W[Espera el siguiente mensaje]
     F --> W
     W --> P
@@ -141,18 +145,21 @@ En la seccion `flujo`, una entrada por rama:
   "nombre": "Bot de <negocio>",
   "mensaje_reintento": "Disculpa, no alcancé a entender tu mensaje. ¿Me lo escribes de nuevo con otras palabras?",
   "ramas": [
-    {"frase": "PASAR A ASESOR", "etiqueta": "Asesor", "color": "#e74c3c",
-     "apaga_agente": true, "mensaje": "En un momento te escribe alguien del equipo."},
-    {"frase": "LEAD COMPLETO", "etiqueta": "Lead", "color": "#27ae60",
+    {"frase": "te conecto con una persona del equipo", "etiqueta": "Asesor", "color": "#e74c3c",
+     "apaga_agente": true, "mensaje": ""},
+    {"frase": "ya quedaron anotados tus datos", "etiqueta": "Lead", "color": "#27ae60",
      "apaga_agente": false, "mensaje": ""}
   ]
 }
 ```
 
 - `frase`: **identica** a la que escribiste en el prompt. Copiala, no la vuelvas a escribir.
+  El flujo la busca tal cual y tambien con la primera letra en mayuscula o en minuscula.
 - `etiqueta`: maximo 15 caracteres.
 - `apaga_agente`: `true` solo cuando la conversacion pasa a una persona.
-- `mensaje`: lo que se le manda al cliente en esa rama. Vacio si no se manda nada.
+- `mensaje`: lo que se le manda al cliente en esa rama. Vacio si no se manda nada. En la
+  rama que pasa a una persona va **vacio**: el agente ya lo dijo con su frase, y un segundo
+  mensaje seguido molesta.
 - `mensaje_reintento`: lo que dice el bot cuando no logra contestar. Escribelo en el tono
   del negocio (de tu o de usted). Si lo dejas vacio, usa uno generico. Cuando falla dos
-  veces, el mensaje de traspaso es el mismo de la rama que apaga el agente.
+  veces, el mensaje de traspaso sale de `escalado.mensaje_de_traspaso` (o uno generico).

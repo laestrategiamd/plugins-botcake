@@ -6,13 +6,13 @@
     "url": "https://laestrategia.agency"
   },
   "description": "Herramientas de automatizacion para el ecosistema Pancake (Botcake, Webcake, CRM, POS)",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "plugins": [
     {
       "name": "botcake-mi-primer-bot",
       "source": "./plugins/botcake-mi-primer-bot",
       "description": "Te acompana paso a paso a construir tus primeros bots en Botcake: un agente de IA que conversa (te hace las preguntas, arma el prompt y la base de conocimiento, lo monta y lo prueba antes de encenderlo), las respuestas automaticas a los comentarios de Facebook e Instagram, la confirmacion de pedidos por WhatsApp y la revision de salud de tu numero de WhatsApp ante Meta.",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "author": { "name": "Luis Manuel Diaz" },
       "keywords": ["botcake", "pancake", "whatsapp", "bot", "chatbot", "ia"]
     }

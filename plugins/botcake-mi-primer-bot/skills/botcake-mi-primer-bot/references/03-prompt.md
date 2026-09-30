@@ -132,42 +132,52 @@ Este bloque va **siempre**, en todos los bots, tal cual:
 ## Las frases ancla: la parte que hace que el bot HAGA cosas
 
 Un bot que solo conversa no sirve de mucho. Para que **haga** algo (poner una etiqueta,
-avisar al equipo, mandar el catalogo) hay que darle una frase exacta que diga cuando pasa
-eso, y despues el flujo detecta esa frase y ejecuta la accion.
+pasar la conversacion a una persona, mandar el catalogo) el bot usa una frase exacta
+**dentro de su respuesta normal**, y el flujo detecta esa frase y ejecuta la accion.
 
 **Como funciona, explicado para el usuario:**
 
-> El bot escribe una frase especial, siempre igual, cuando pasa algo importante. Esa frase
-> es la senal. El flujo la esta esperando: cuando la ve, hace la accion: te avisa, etiqueta
-> al cliente, manda el catalogo.
+> Cuando pasa algo importante, el bot lo dice con una frase que siempre es igual, metida en
+> su mensaje normal. Si alguien pide hablar contigo, por ejemplo: "Claro, te conecto con una
+> persona del equipo". El flujo esta pendiente de esa frase: cuando la ve, marca al cliente
+> y hace la accion. El cliente solo lee un mensaje normal.
 
 **Como se escriben:**
 
-- Una frase por accion, **exacta**, sin variaciones.
-- En el prompt van con la instruccion de escribirla **al final del mensaje**.
-- Tienen que ser frases que un cliente jamas escribiria por casualidad.
+- Una frase por accion, **exacta**, y que suene natural: es parte del mensaje que lee el
+  cliente. 🔴 **Nunca** un codigo en mayusculas ("PASAR A ASESOR") ni una linea suelta al
+  final del mensaje: el cliente lo ve y el bot se nota como maquina.
+- Con un trozo que el bot no use en otras respuestas, para que la accion no salte sola:
+  "te conecto con una persona del equipo" sirve; "un asesor" no, porque el bot lo puede
+  decir en cualquier momento.
+- Para una opcion elegida (un producto, un plan, una sede) no uses el nombre suelto: el bot
+  lo escribe tambien cuando lista las opciones y la accion saltaria para todas. Usa una
+  frase que solo tenga sentido al confirmar: "tu pedido es el <PRODUCTO>".
+- Si una frase esta contenida en otra, la mas larga va primero en las ramas de
+  `mi-bot.json`: el flujo ejecuta solo la primera que encuentra.
 
 Ejemplo dentro del prompt:
 
 ```
-Cuando la persona pida hablar con alguien del equipo, o se muestre molesta, o pregunte algo
-que no esta en tu informacion, terminas tu mensaje con esta frase exacta:
-PASAR A ASESOR
-
-Cuando la persona ya te dijo su nombre y que producto le interesa, terminas tu mensaje con:
-LEAD COMPLETO
+FRASES ANCLA (obligatorias). Escribelas tal cual, integradas en tu mensaje normal, nunca
+entre comillas ni en una linea aparte. Maximo una por mensaje, y cada una una sola vez en
+la conversacion.
+- Cuando la persona pida hablar con alguien del equipo, se muestre molesta, o pregunte algo
+  que no esta en tu informacion: te conecto con una persona del equipo
+- Cuando la persona ya te dio su nombre y el producto que le interesa: ya quedaron anotados tus datos
 ```
 
 **La regla que no se puede romper:** cada frase ancla del prompt tiene que estar escrita
-**identica** en el flujo. Si el prompt dice `PASAR A ASESOR` y el flujo busca
-`PASAR A UN ASESOR`, la accion no se ejecuta nunca y no aparece ningun error. Es la causa
+**identica** en el flujo. Si el prompt dice "te conecto con una persona del equipo" y el
+flujo busca "te comunico con una persona del equipo", la accion no se ejecuta nunca y no
+aparece ningun error. Es la causa
 numero uno de "el bot funciona pero no me avisa". `mibot montar` lo comprueba antes de
 construir, pero es mejor no llegar ahi con el error.
 
 **Y la regla hermana: nunca le digas al bot que algo "lo hace el sistema".** Si el prompt
 dice "el catalogo lo envia el sistema automaticamente", el bot deja de escribir la frase
 ancla y el catalogo no sale nunca. Se le dice lo que hace EL: "cuando pidan el catalogo,
-terminas tu mensaje con ENVIAR CATALOGO".
+dices que se lo compartes con esta frase: te comparto el catalogo".
 
 Anota las frases ancla en `mi-bot.json`, porque la Fase 7 las necesita exactas.
 

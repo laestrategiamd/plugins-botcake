@@ -486,7 +486,9 @@ function construir(agenteId, campoPreg, campoResp, tagBot, tagAsesor, tagFallo, 
       destino = kMsg; tipo = null;
     }
     const frase = r.frase;
-    const variantes = [...new Set([frase, frase[0].toUpperCase() + frase.slice(1).toLowerCase(), frase.toLowerCase()])];
+    // La frase va dentro del mensaje: puede salir al empezar la oracion o en medio. El
+    // "contiene" de Botcake distingue mayusculas, asi que se busca con la primera letra en las dos.
+    const variantes = [...new Set([frase, frase[0].toUpperCase() + frase.slice(1), frase[0].toLowerCase() + frase.slice(1)])];
     cards.push({ key: key(), type: 'and', config: {},
       condition: [
         { cuf_id: campoResp, cuf_type: 1, filter_type: 'contains', label: 'Respuesta IA', title: 'Respuesta IA', type: 'cuf', value: null, values: variantes },

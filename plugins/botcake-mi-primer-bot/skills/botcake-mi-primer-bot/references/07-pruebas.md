@@ -152,15 +152,13 @@ Se lo ensenas una por una, con este formato:
 
 ```
 Pregunta 7: "Quiero hablar con un asesor"
-Respuesta del bot: "Claro, en un momento te escribe alguien del equipo 😊 PASAR A ASESOR"
+Respuesta del bot: "Claro, te conecto con una persona del equipo para que te ayude 😊"
 Etiqueta puesta: Asesor ✅
 Agente apagado: ✅ (el siguiente mensaje del telefono no recibio respuesta)
 ```
 
-⚠️ En el telefono la frase ancla **se ve**: es parte del mensaje. Diselo al usuario antes
-de que la vea: *"esa frase en mayusculas al final es la senal para el flujo; los clientes
-tambien la ven. Si te molesta, en el prompt se puede pedir que la escriba en una linea
-aparte y mas discreta, pero tiene que estar."*
+Si el bot escribe la frase ancla como codigo, en mayusculas o en una linea aparte, esta mal:
+el cliente no tiene que notar nada. Se corrige en el prompt (`03-prompt.md`, frases ancla).
 
 Si en `mibot respuestas` aparece la etiqueta `IA sin resp`, el agente no logro contestar
 un mensaje y el flujo pidio que lo repitiera. Una vez aislada puede pasar; si se repite,

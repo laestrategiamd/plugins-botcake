@@ -53,7 +53,7 @@
   },
   "escalado": {
     "cuando_pasa_a_persona": [],
-    "mensaje_de_traspaso": "",
+    "mensaje_de_traspaso": "En un momento te escribe alguien del equipo.",
     "fuera_de_horario": ""
   },
   "estilo": {
@@ -82,14 +82,14 @@
     "mensaje_reintento": "",
     "ramas": [
       {
-        "frase": "PASAR A ASESOR",
+        "frase": "te conecto con una persona del equipo",
         "etiqueta": "Asesor",
         "color": "#e74c3c",
         "apaga_agente": true,
-        "mensaje": "En un momento te escribe alguien del equipo."
+        "mensaje": ""
       },
       {
-        "frase": "LEAD COMPLETO",
+        "frase": "ya quedaron anotados tus datos",
         "etiqueta": "Lead",
         "color": "#27ae60",
         "apaga_agente": false,
