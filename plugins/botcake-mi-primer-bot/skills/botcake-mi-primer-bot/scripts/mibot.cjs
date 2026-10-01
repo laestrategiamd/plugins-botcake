@@ -31,9 +31,13 @@
 //   mibot verificar-confirmacion [--encendido]    comprueba lo montado paso por paso
 //   mibot encender-confirmacion                   enciende los 3 pasos (solo con un si del usuario)
 //   mibot apagar-confirmacion                     los apaga
+//
+// Fallos:
+//   mibot reportar <reporte.json> [--enviar]      arma el reporte (y con --enviar lo manda al buzon)
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { Botcake, key, medir, deSlate, indexado, dormir, SESION } = require('./_cliente.cjs');
 
 const PROY = 'mi-bot.json';
@@ -56,7 +60,7 @@ function opcion(args, nombre, defecto) {
   return args[i + 1];
 }
 
-const SIN_VALOR = ['--solo-ver', '--encendido'];
+const SIN_VALOR = ['--solo-ver', '--encendido', '--enviar'];
 
 function sinOpciones(args) {
   const out = [];
@@ -1061,6 +1065,77 @@ async function interruptorConfirmacion(bc, encender) {
   return 1;
 }
 
+// ---------------------------------------------------------------- reportar un fallo
+// Protocolo en references/09-reportar-un-fallo.md. El buzon guarda el permiso de GitHub y vuelve a
+// filtrar; aqui se completa el reporte, se tapan los datos privados y se ensena antes de mandar.
+const BUZON = 'https://buzon-plugins-botcake.vercel.app/api/reporte';
+const CAMPOS_REPORTE = ['tipo', 'titulo', 'recorrido', 'paso', 'que_hacia', 'que_esperaba', 'que_paso', 'salida'];
+
+function limpiarPrivado(texto) {
+  let t = String(texto || '');
+  let n = 0;
+  const tapar = (re, por) => { t = t.replace(re, (...m) => { n++; return typeof por === 'function' ? por(...m) : por; }); };
+  tapar(/eyJ[\w-]{10,}(?:\.[\w-]+){0,2}/g, '[llave]');
+  tapar(/\b(access_token|api_key|token)=[^\s&"']+/gi, (m, k) => `${k}=[llave]`);
+  tapar(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[correo]');
+  tapar(/\b(?:waba|igo|web)_\w+/g, '[pagina]');
+  tapar(/\+?\d[\d\s().-]{7,}\d/g, '[numero]');
+  return { texto: t, tapados: n };
+}
+
+async function reportar(args, argv) {
+  if (!args[0]) { console.log('Uso: mibot reportar <reporte.json> [--enviar]  (ver references/09-reportar-un-fallo.md)'); return 1; }
+  const r = JSON.parse(fs.readFileSync(args[0], 'utf8'));
+  const plugin = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', '.claude-plugin', 'plugin.json'), 'utf8'));
+  const ARCHIVO_ID = '.mibot-instalacion';
+  if (!fs.existsSync(ARCHIVO_ID)) fs.writeFileSync(ARCHIVO_ID, crypto.randomBytes(8).toString('hex'));
+  let tapados = 0;
+  const L = (v) => { const x = limpiarPrivado(v); tapados += x.tapados; return x.texto; };
+  const rep = {
+    id_instalacion: fs.readFileSync(ARCHIVO_ID, 'utf8').trim(), version: plugin.version, plugin: plugin.name,
+    sistema: { darwin: 'Mac', win32: 'Windows' }[process.platform] || process.platform,
+    tipo: r.tipo, recorrido: r.recorrido,
+    titulo: L(r.titulo), paso: L(r.paso), que_hacia: L(r.que_hacia), que_esperaba: L(r.que_esperaba),
+    que_paso: L(r.que_paso), comando: L(r.comando || ''), salida: L(r.salida),
+    comprobaciones: (r.comprobaciones || []).map((c) => ({ que: L(c && c.que), resultado: L(c && c.resultado) })),
+  };
+
+  const faltan = CAMPOS_REPORTE.filter((k) => !String(rep[k] || '').trim());
+  const comprobaciones = rep.comprobaciones.filter((c) => c.que.trim() && c.resultado.trim());
+  if (faltan.length || comprobaciones.length < 3) {
+    if (faltan.length) console.log(`>>> Faltan en el reporte: ${faltan.join(', ')}.`);
+    if (comprobaciones.length < 3) console.log('>>> Faltan comprobaciones de configuracion: van al menos tres (paso 2 del protocolo).');
+    return 1;
+  }
+
+  console.log(`Reporte (version ${rep.version}, ${rep.sistema}, datos privados tapados: ${tapados})\n`);
+  console.log(`[${rep.tipo}] ${rep.titulo}`);
+  console.log(`Recorrido: ${rep.recorrido}, ${rep.paso}`);
+  console.log(`Que hacia: ${rep.que_hacia}\nQue esperaba: ${rep.que_esperaba}\nQue paso: ${rep.que_paso}`);
+  if (rep.comando) console.log(`Comando: ${rep.comando}`);
+  console.log(`Lo que respondio:\n${rep.salida.split('\n').map((l) => '  | ' + l).join('\n')}`);
+  console.log('Comprobaciones:');
+  for (const c of comprobaciones) console.log(`  - ${c.que}: ${c.resultado}`);
+
+  if (!argv.includes('--enviar')) {
+    console.log('\nAsi se va a publicar (es publico). Ensenaselo al usuario; si esta de acuerdo:');
+    console.log(`  mibot reportar ${args[0]} --enviar`);
+    return 0;
+  }
+  let res, cuerpo;
+  try {
+    res = await fetch(BUZON, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(rep), signal: AbortSignal.timeout(20000) });
+    cuerpo = await res.json();
+  } catch (e) {
+    console.log(`\n>>> No pude llegar al buzon (${e.message}). Revisa la conexion y repite.`);
+    return 1;
+  }
+  console.log(`\n${cuerpo.mensaje || JSON.stringify(cuerpo)}`);
+  if (cuerpo.url) console.log(`Enlace: ${cuerpo.url}`);
+  return cuerpo.ok ? 0 : 1;
+}
+
 // ---------------------------------------------------------------- main
 async function main() {
   const argv = process.argv.slice(2);
@@ -1074,6 +1149,7 @@ async function main() {
   if (cmd === 'medir') return args[0] ? medirArchivo(args[0]) : uso();
   if (cmd === 'montar') return montar(argv.slice(1));
   if (cmd === 'confirmacion') return confirmacion(argv.slice(1));
+  if (cmd === 'reportar') return reportar(args, argv);
 
   const bc = new Botcake();
   switch (cmd) {

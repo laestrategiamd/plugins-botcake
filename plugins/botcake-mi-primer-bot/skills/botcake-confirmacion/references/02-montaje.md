@@ -114,7 +114,7 @@ usuario. Si alguna dice `MAL`:
 | `le falta el filtro «Etiqueta igual R1»` | En pantalla: `botcake.io/<pagina>/sequence` > «Confirmación de pedidos» > en el paso Recordatorio, clic en el texto del horario («Después de 2 Horas...») > **Agregar filtro** > Etiqueta, Igual, R1 > **Guardar y actualizar** |
 | `tiene flujo de respaldo` (paso 3) | Ese paso ya no se va a poder encender. Borra `montaje.pasos.sin_respuesta` de `mi-confirmacion.json`, corre otra vez `mibot confirmacion` (crea uno nuevo) y borra el viejo en la pantalla de la secuencia |
 | `no pone Pedido nuevo y R1` | Anotalo en `pendientes`. En la Fase 4 la regla del POS pone esas dos marcas tambien, y cubre este fallo |
-| Cualquier otra | No la arregles a mano: anotala en `pendientes` y pidele al usuario que la reporte a quien le entrego el plugin |
+| Cualquier otra | No la arregles a mano: anotala en `pendientes` y sigue el protocolo de `../botcake-mi-primer-bot/references/09-reportar-un-fallo.md` |
 
 ## Paso 7. Cerrar la tanda
 

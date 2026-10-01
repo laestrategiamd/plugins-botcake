@@ -165,8 +165,8 @@ Un clic que no responde, una pantalla distinta a la de la guia, o un boton que n
 aparece: no insistas mas de dos veces. Pasas a **decirle al usuario donde hacer el clic
 el mismo**, mirando la pantalla juntos (`references/02-montaje.md` describe cada pantalla
 con las palabras que aparecen en ella). Nunca lo dejas a medias y sin salida. Si Botcake
-cambio algo, pidele que lo reporte a quien le entrego el plugin, con la fecha y lo que
-salio en pantalla.
+cambio algo, sigue el protocolo de `../botcake-mi-primer-bot/references/09-reportar-un-fallo.md`: descarta
+primero la configuracion y, si de verdad es un fallo, lo reportas con su permiso.
 
 ---
 
