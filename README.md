@@ -112,6 +112,9 @@ cuenta baja un respaldo de lo que ya tienes.
 
 Botcake es una plataforma de terceros y puede cambiar. Si algo deja de funcionar, el plugin
 te lleva por el camino manual para que termines igual, y te pide que reportes el fallo.
+Para reportarlo, pidele a Claude «reporta este fallo»: primero revisa contigo que no sea
+un tema de configuracion, te ensena el reporte con tus datos privados tapados y, si estas
+de acuerdo, lo envia.
 
 ## Licencia
 
