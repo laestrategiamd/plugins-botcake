@@ -120,7 +120,7 @@ Todo `OK`, con los tres pasos encendidos. Guarda `mi-confirmacion.json`
 | No llega ningun WhatsApp | El origen del pedido de prueba esta marcado en la regla; la regla esta encendida; el pedido tiene el telefono con codigo de pais; el saldo; `mibot verificar-confirmacion --encendido` |
 | Llega con huecos ("Hola , ...") | Ese dato falta en el pedido del POS |
 | Toca el boton y no pasa nada | Los flujos de respuesta estan publicados (`mibot verificar-confirmacion`) |
-| Las marcas no cambian | `mibot verificar-confirmacion`; si dice que todo esta bien, reportalo |
+| Las marcas no cambian | `mibot verificar-confirmacion`; si dice que todo esta bien, protocolo de `../botcake-mi-primer-bot/references/09-reportar-un-fallo.md` |
 
 Si algo sale mal y no se resuelve en el momento: `mibot apagar-confirmacion` antes de
 seguir buscando. Los pedidos de sus clientes siguen entrando mientras tanto.
@@ -158,4 +158,4 @@ Un resumen corto en el chat:
 - **Cambiar un texto:** los de gracias y modificar se cambian en Botcake (abrir el flujo,
   editar el texto, **Actualizar**); que abra Claude Code en la misma carpeta y te lo pida.
   Cambiar una plantilla ya aprobada es otra revision de Meta y rehacer el paso: este
-  recorrido todavia no lo hace; que lo reporte a quien le entrego el plugin.
+  recorrido todavia no lo hace.

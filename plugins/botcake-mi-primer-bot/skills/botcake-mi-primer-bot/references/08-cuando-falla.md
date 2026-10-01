@@ -117,8 +117,9 @@ guia ya no se parece a la que ve el usuario.
 2. Diselo claro: *"Botcake cambio algo desde que se escribio esta guia. Lo hacemos a mano y
    yo te voy indicando."*
 3. Pasas al plan B.
-4. Pidele al usuario que reporte el fallo a quien le entrego el plugin, con la fecha y lo
-   que salio en pantalla, para que se pueda corregir.
+4. Cuando el usuario haya terminado por el camino manual, sigue el protocolo de
+   `09-reportar-un-fallo.md`: si de verdad es un cambio de Botcake, lo reportas con su
+   permiso para que se corrija en una version nueva.
 
 ---
 

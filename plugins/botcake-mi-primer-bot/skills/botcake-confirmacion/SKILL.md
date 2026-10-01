@@ -181,7 +181,8 @@ aparece: no insistas mas de dos veces. Si el problema es la llave o la conexion,
 **decirle al usuario donde hacer el clic el mismo**, mirando la pantalla juntos. Nunca lo
 dejas a medias y sin salida, y **nunca dejas los pasos encendidos si algo quedo mal**: se
 apagan con `mibot apagar-confirmacion` antes de seguir buscando. Si Botcake cambio algo,
-pidele que lo reporte a quien le entrego el plugin, con la fecha y lo que salio.
+sigue el protocolo de `../botcake-mi-primer-bot/references/09-reportar-un-fallo.md`: descarta primero la
+configuracion y, si de verdad es un fallo, lo reportas con su permiso.
 
 ---
 

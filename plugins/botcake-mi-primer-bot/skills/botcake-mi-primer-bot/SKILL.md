@@ -260,6 +260,10 @@ algo, el usuario **tiene que poder terminar igual**: le entregas los archivos y 
 instrucciones para hacer ese paso a mano. Nunca lo dejas con el trabajo a medias y sin
 salida.
 
+Si el usuario dice "reporta este fallo", o un fallo no se resuelve, **abre:**
+`references/09-reportar-un-fallo.md`. Primero se descarta la configuracion; solo lo que de
+verdad es un fallo del plugin o un cambio de Botcake se reporta, con su permiso.
+
 ---
 
 ## Lo que esta skill NO hace
