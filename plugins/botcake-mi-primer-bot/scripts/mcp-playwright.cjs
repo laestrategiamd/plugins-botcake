@@ -21,8 +21,10 @@ function hayChrome() {
   return rutas.some((r) => r && fs.existsSync(r));
 }
 
+// Sin Chrome se usa el Chromium de Playwright, que la Fase 0 instala con permiso del usuario
+// (references/00-requisitos.md, punto 4). Sin esta opcion Playwright busca Chrome y no arranca.
 const args = ['-y', '@playwright/mcp@latest'];
-if (hayChrome()) args.push('--browser', 'chrome');
+args.push('--browser', hayChrome() ? 'chrome' : 'chromium');
 args.push(...process.argv.slice(2));
 
 const hijo = spawn(win ? 'npx.cmd' : 'npx', args, { stdio: 'inherit', shell: win });
