@@ -70,8 +70,10 @@ Preguntalo todo de una vez, en una sola lista:
    que ser profesional (se cambia gratis desde el telefono).
 2. **Un numero de WhatsApp donde recibir a la gente.** Sirve un WhatsApp normal o uno de
    empresa. Pide el numero completo con el codigo del pais (ej. 57 para Colombia).
-3. **Node.js instalado** (para el navegador automatizado). Se comprueba con `node -v`; si
-   falta, `nodejs.org`, version LTS, y reabrir la app de Claude.
+3. **Node.js y un navegador** (para el navegador automatizado). Se comprueba con `node -v` y
+   mirando si tiene Google Chrome. Si falta algo, **lo instalas tu con su permiso**, como dice
+   `../botcake-mi-primer-bot/references/00-requisitos.md`, punto 4: el usuario no instala nada
+   por su cuenta.
 
 No hace falta la billetera de Pancake ni saldo: este recorrido no usa inteligencia
 artificial.

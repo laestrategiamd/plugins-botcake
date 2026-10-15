@@ -64,33 +64,77 @@ estan en `00b-arranque-desde-cero.md` (bloque 5); si es otra persona, diselo asi
 tiene que hacer el dueno de la cuenta desde Botcake AI, porque implica el cobro del
 consumo. Cuando este conectado seguimos."*
 
-### 4. Node.js instalado (y en Windows, Git para Windows)
+### 4. Node.js y el navegador (los instalas tu, con su permiso)
 
-Hace falta para dos cosas: el navegador automatizado que abre Botcake, y el comando
-`mibot` que hace el montaje. Es lo unico que hay que instalar.
+Node.js hace falta para dos cosas: el navegador automatizado que abre Botcake, y el comando
+`mibot` que hace el montaje. El navegador es Google Chrome si lo tiene; si no, Chromium, un
+navegador que solo usa el plugin. **El usuario no instala nada por su cuenta:** lo instalas
+tu, despues de pedirle permiso.
 
-**Como lo comprueba** (corre tu este comando):
+**Como lo compruebas** (corres tu los comandos):
 
 ```bash
 node -v
 ```
 
-Si responde `v18` o superior (por ejemplo `v22.11.0`), esta bien. Si dice `command not
-found` o `no se reconoce`, no lo tiene.
+Si responde `v20` o superior (por ejemplo `v24.22.0`), esta bien: el navegador del plugin no
+arranca con menos. Si dice `command not
+found` o `no se reconoce`, falta.
 
-**Si no lo tiene:** que descargue la version LTS de `nodejs.org`, la instale con doble
-clic (en Windows, con las opciones que vienen marcadas), y **cierre y vuelva a abrir la
-app de Claude** para que el sistema lo vea.
+Chrome: en Mac, que exista `/Applications/Google Chrome.app`; en Windows, `chrome.exe` dentro
+de `Google\Chrome\Application` en `Program Files`, `Program Files (x86)` o `%LOCALAPPDATA%`
+(las mismas rutas que mira `scripts/mcp-playwright.cjs` del plugin). Anota los dos resultados
+en `mi-bot.json` (`requisitos.nodejs`, `requisitos.chrome`, `requisitos.sistema`).
 
-**Solo en Windows: Git para Windows.** La pestana Code de la app de Claude lo exige la
-primera vez que se abre en Windows, y es lo que hace que los comandos de esta skill corran
-igual que en Mac. Si el usuario esta en Windows y la app no abre Code o le pide Git: que lo
-instale desde `git-scm.com` con las opciones que vienen marcadas y reinicie la app. En Mac
-no aplica.
+**Si falta Node, se lo pides asi y esperas el si:**
 
-**Google Chrome (opcional, pero ayuda).** Si el usuario tiene Google Chrome instalado, el
-navegador automatizado lo usa y no hay que descargar nada mas. Si no lo tiene, en la Fase 6
-se descarga un navegador aparte (tarda un par de minutos). Anota si lo tiene.
+> *"Para montar el bot necesito instalar Node.js, el programa con el que funciona el plugin.
+> Lo bajo de su pagina oficial, compruebo que el archivo no venga alterado y lo instalo. Te va
+> a salir una ventana del sistema: en Mac te pide la contrasena de tu computador (la escribes
+> tu en esa ventana, nunca en este chat); en Windows, pulsas Si (si no ves la ventana, busca
+> un escudo parpadeando en la barra de tareas, abajo). ¿Lo instalo?"*
+
+Con el si, corres el instalador del plugin (desde la carpeta base de esta skill):
+
+- Mac: `sh "<carpeta base de la skill>/scripts/instalar-node.sh"`
+- Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File "<carpeta base de la skill>\scripts\instalar-node.ps1"`
+
+Correlo con un tiempo de espera largo (600000 ms): la descarga mas la ventana pueden pasar de
+los 2 minutos normales. Si aun asi se corta, antes de repetir mira si ya quedo (`node -v`, o la
+ruta completa: `/usr/local/bin/node -v` en Mac, `& "C:\Program Files\nodejs\node.exe" -v` en
+Windows). Baja la ultima version LTS de `nodejs.org`, comprueba su suma oficial y abre la
+ventana del sistema. La ultima linea dice como fue: `INSTALADO v...` (listo), `YA_ESTABA v...` (ya lo
+tenia y esta sesion no lo veia: basta con reiniciar la app) o `ERROR: ...` (le cuentas el
+motivo con palabras sencillas; si cancelo la ventana, no se instalo nada y se repite cuando
+quiera). Si quieres ver antes que bajaria, `--solo-ver` (Mac) o `-SoloVer` (Windows).
+
+**Si el modo de permisos esta en Auto** y la instalacion se frena o no te deja correrla:
+pidele que cambie el selector junto al boton de enviar a Manual, que apruebe ese paso y que
+vuelva a Auto despues.
+
+**Si no tiene Chrome** (y ya hay Node), se lo pides asi: *"Para abrir Botcake necesito un
+navegador para el plugin. Como no tienes Google Chrome, instalo Chromium, un navegador que
+solo usa el plugin: unos 190 MB en tu carpeta de usuario, sin contrasena. ¿Lo instalo?"* Con
+el si:
+
+```bash
+npx -y -p @playwright/mcp@latest playwright install --no-shell chromium
+```
+
+Asi baja justo el Chromium que espera el navegador del plugin. Si Node se acaba de instalar
+y `npx` todavia no existe en esta sesion, usa la ruta completa: `/usr/local/bin/npx` en Mac,
+`"C:\Program Files\nodejs\npx.cmd"` en Windows.
+
+**Al terminar, que cierre la app de Claude y la vuelva a abrir** (en Mac, con Cmd+Q). El
+navegador del plugin y el aviso de version nueva solo ven a Node despues de reiniciar. Antes,
+anota en `mi-bot.json` lo instalado, para que con la frase de retomar sigas desde aqui.
+
+**Un aviso al abrir sin Node.** Mientras falte Node, al abrir la sesion Claude Code muestra
+un aviso de error del plugin: es el aviso de version nueva, que no puede arrancar. Si el
+usuario lo menciona, es eso; no rompe nada y desaparece cuando Node esta instalado.
+
+**En Windows no hace falta Git:** sin Git, Claude Code usa PowerShell, y el plugin trae
+`mibot.cmd` para PowerShell.
 
 Despues comprueba tu que el comando del plugin responde:
 

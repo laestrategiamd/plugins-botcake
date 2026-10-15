@@ -100,8 +100,9 @@ Se activa diciendo *revisa que mi WhatsApp este bien* o *mi WhatsApp tiene calid
   conecta el dueno de la cuenta). Para los comentarios no hace falta.
 - Para la confirmacion de pedidos: WhatsApp API, los pedidos entrando al POS de Pancake y
   saldo para plantillas de WhatsApp en la billetera (minimo 5 dolares).
-- Node.js instalado (`nodejs.org`, version LTS). En Windows, ademas, Git para Windows
-  (`git-scm.com`).
+- Node.js y un navegador: si faltan, el plugin te pide permiso y los instala el (Node.js
+  desde nodejs.org; si no tienes Google Chrome, Chromium para el navegador del plugin). Tu
+  solo autorizas en la ventana del sistema.
 - La app de Claude (pestana Code) o Claude Code en tu computador.
 
 ## Aviso

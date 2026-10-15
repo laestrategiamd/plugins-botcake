@@ -88,8 +88,10 @@ horas entre la tanda 1 y la 2.
 
 ## Ademas
 
-- **Node.js instalado** (`node -v`). Si falta: `nodejs.org`, version LTS, y reabrir la app
-  de Claude. En Windows, ademas, Git para Windows.
+- **Node.js y un navegador** (`node -v` y si tiene Google Chrome). Si falta algo, **lo
+  instalas tu con su permiso**, como dice el punto 4 de
+  `../botcake-mi-primer-bot/references/00-requisitos.md` (desde la carpeta base de la skill
+  de confirmacion): el usuario no instala nada por su cuenta.
 - **Permisos de administrador** en la pagina de WhatsApp en Botcake y en la tienda del POS:
   en la Fase 4 hay que crear una regla en los ajustes del POS.
 

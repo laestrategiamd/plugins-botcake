@@ -65,7 +65,9 @@ Las dos siguen los mismos pasos. En la primera, las preguntas del paso 2 pesan m
 ## El comando `mibot`
 
 Las lecturas de Botcake pasan por el comando del plugin, desde la carpeta del proyecto del
-usuario. Si la terminal dice que `mibot` no existe, se llama por su ruta:
+usuario. Antes de la primera, `node -v`: si falta Node, o el navegador si no tiene Google
+Chrome, **los instalas tu con su permiso**, como dice
+`../botcake-mi-primer-bot/references/00-requisitos.md`, punto 4. Si la terminal dice que `mibot` no existe, se llama por su ruta:
 `node "<carpeta base de esta skill>/../botcake-mi-primer-bot/scripts/mibot.cjs"`, entre
 comillas. La llave de sesion es la misma de los otros recorridos (`.botcake-sesion`); si no
 existe, se guarda con los pasos 1 a 4 de la Fase 6 de

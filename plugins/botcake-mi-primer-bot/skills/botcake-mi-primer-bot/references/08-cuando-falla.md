@@ -27,8 +27,10 @@ Si tampoco: `node -v`. Si eso falla, es Node.js (abajo).
 **Node.js no esta, o se instalo despues de abrir la app.**
 
 - Si dice `command not found` / `no se reconoce`: no esta instalado, o la app de Claude se
-  abrio antes de instalarlo. Que cierre y vuelva a abrir la app.
-- Si la version es menor que 18: que actualice desde `nodejs.org`.
+  abrio antes de instalarlo. Si no esta, lo instalas tu con su permiso (`00-requisitos.md`,
+  punto 4); si ya se instalo, que cierre y vuelva a abrir la app.
+- Si la version es menor que 20 (el navegador del plugin dice «Playwright requires Node.js 20
+  or higher»): el mismo instalador del punto 4 pone la ultima LTS.
 - Si falla por permisos o por red: que lo corra el mismo en su terminal y te diga que sale.
 
 ---
@@ -36,8 +38,11 @@ Si tampoco: `node -v`. Si eso falla, es Node.js (abajo).
 ## El navegador no abre, o abre en blanco
 
 Que cierre cualquier otra ventana del navegador automatizado que haya quedado abierta y lo
-intente otra vez. Si dice que no encuentra un navegador: `npx playwright install chromium`
-(un par de minutos). Si sigue, **plan B: todo el montaje a mano** (abajo).
+intente otra vez. Si dice que no encuentra un navegador (o que falta un ejecutable de
+Chromium), con su permiso: `npx -y -p @playwright/mcp@latest playwright install --no-shell
+chromium` (un par de minutos), y que reinicie la app. Pasa tambien cuando una version nueva
+del navegador del plugin pide un Chromium mas reciente. Si sigue, **plan B: todo el montaje a
+mano** (abajo).
 
 ---
 
