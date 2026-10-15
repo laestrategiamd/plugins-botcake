@@ -77,7 +77,8 @@ tu, despues de pedirle permiso.
 node -v
 ```
 
-Si responde `v18` o superior (por ejemplo `v24.22.0`), esta bien. Si dice `command not
+Si responde `v20` o superior (por ejemplo `v24.22.0`), esta bien: el navegador del plugin no
+arranca con menos. Si dice `command not
 found` o `no se reconoce`, falta.
 
 Chrome: en Mac, que exista `/Applications/Google Chrome.app`; en Windows, `chrome.exe` dentro
@@ -90,15 +91,19 @@ en `mi-bot.json` (`requisitos.nodejs`, `requisitos.chrome`, `requisitos.sistema`
 > *"Para montar el bot necesito instalar Node.js, el programa con el que funciona el plugin.
 > Lo bajo de su pagina oficial, compruebo que el archivo no venga alterado y lo instalo. Te va
 > a salir una ventana del sistema: en Mac te pide la contrasena de tu computador (la escribes
-> tu en esa ventana, nunca en este chat); en Windows, pulsas Si. ¿Lo instalo?"*
+> tu en esa ventana, nunca en este chat); en Windows, pulsas Si (si no ves la ventana, busca
+> un escudo parpadeando en la barra de tareas, abajo). ¿Lo instalo?"*
 
 Con el si, corres el instalador del plugin (desde la carpeta base de esta skill):
 
 - Mac: `sh "<carpeta base de la skill>/scripts/instalar-node.sh"`
 - Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File "<carpeta base de la skill>\scripts\instalar-node.ps1"`
 
-Baja la ultima version LTS de `nodejs.org`, comprueba su suma oficial y abre la ventana del
-sistema. La ultima linea dice como fue: `INSTALADO v...` (listo), `YA_ESTABA v...` (ya lo
+Correlo con un tiempo de espera largo (600000 ms): la descarga mas la ventana pueden pasar de
+los 2 minutos normales. Si aun asi se corta, antes de repetir mira si ya quedo (`node -v`, o la
+ruta completa: `/usr/local/bin/node -v` en Mac, `& "C:\Program Files\nodejs\node.exe" -v` en
+Windows). Baja la ultima version LTS de `nodejs.org`, comprueba su suma oficial y abre la
+ventana del sistema. La ultima linea dice como fue: `INSTALADO v...` (listo), `YA_ESTABA v...` (ya lo
 tenia y esta sesion no lo veia: basta con reiniciar la app) o `ERROR: ...` (le cuentas el
 motivo con palabras sencillas; si cancelo la ventana, no se instalo nada y se repite cuando
 quiera). Si quieres ver antes que bajaria, `--solo-ver` (Mac) o `-SoloVer` (Windows).

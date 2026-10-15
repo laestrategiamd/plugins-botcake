@@ -2,7 +2,8 @@
 # Instala Node.js (la ultima version LTS) en Mac con el instalador oficial de nodejs.org.
 # Antes de instalar comprueba que el archivo descargado coincide con la suma SHA-256 que publica
 # nodejs.org. La instalacion la autoriza el usuario en la ventana de contrasena del Mac: Claude
-# nunca ve la contrasena. Si ya hay Node 18 o superior, no hace nada.
+# nunca ve la contrasena. Si ya hay Node 20 o superior (el minimo del navegador del plugin,
+# Playwright), no hace nada.
 #
 #   sh instalar-node.sh             instala, solo si falta
 #   sh instalar-node.sh --solo-ver  dice que version y que archivo bajaria, sin instalar
@@ -16,7 +17,7 @@ SOLO_VER=0
 [ "$SOLO_VER" = 1 ] || for n in "$(command -v node 2>/dev/null)" /usr/local/bin/node /opt/homebrew/bin/node; do
   if [ -n "$n" ] && [ -x "$n" ]; then
     v=$("$n" -v 2>/dev/null)
-    case "$v" in v1[89].*|v[2-9][0-9].*) echo "YA_ESTABA $v ($n)"; exit 0 ;; esac
+    case "$v" in v2[0-9].*|v[3-9][0-9].*) echo "YA_ESTABA $v ($n)"; exit 0 ;; esac
   fi
 done
 

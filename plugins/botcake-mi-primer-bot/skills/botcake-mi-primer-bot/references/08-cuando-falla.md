@@ -29,7 +29,8 @@ Si tampoco: `node -v`. Si eso falla, es Node.js (abajo).
 - Si dice `command not found` / `no se reconoce`: no esta instalado, o la app de Claude se
   abrio antes de instalarlo. Si no esta, lo instalas tu con su permiso (`00-requisitos.md`,
   punto 4); si ya se instalo, que cierre y vuelva a abrir la app.
-- Si la version es menor que 18: el mismo instalador del punto 4 pone la ultima LTS.
+- Si la version es menor que 20 (el navegador del plugin dice «Playwright requires Node.js 20
+  or higher»): el mismo instalador del punto 4 pone la ultima LTS.
 - Si falla por permisos o por red: que lo corra el mismo en su terminal y te diga que sale.
 
 ---
