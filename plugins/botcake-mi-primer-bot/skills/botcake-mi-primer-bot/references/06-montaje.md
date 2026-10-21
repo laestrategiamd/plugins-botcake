@@ -45,19 +45,26 @@ tiene que volver a entrar.
 
 ### Paso 3. Guardar la llave de sesion y elegir la pagina `[lo haces tu]`
 
-La llave de sesion esta en las cookies del navegador (`token_jwt`). Se lee ejecutando esto
-en la pestana de Botcake:
+La llave de sesion esta en las cookies del navegador (`token_jwt`). **No la traigas al
+chat:** la guardas directo a un archivo. Con la herramienta `browser_evaluate` del navegador
+del plugin, en la pestana de Botcake, corre esta funcion con la opcion
+`filename: ".botcake-llave"`:
 
 ```js
-document.cookie.split('; ').find(c => c.startsWith('token_jwt=')).slice(10)
+() => document.cookie.split('; ').find(c => c.startsWith('token_jwt=')).slice(10)
 ```
 
-Empieza siempre por `eyJ`; si lo que salio no empieza asi, se copio otra cosa. Guardala
-enseguida:
+El archivo queda en la carpeta del proyecto y la llave no aparece en la conversacion.
+Enseguida:
 
 ```bash
-mibot sesion "<llave>"
+mibot sesion --archivo .botcake-llave
 ```
+
+`mibot` comprueba que la llave empiece por `eyJ`, la guarda en `.botcake-sesion` y **borra
+`.botcake-llave`**. Si dice que no tiene la forma correcta, se leyo otra cosa: repite este
+paso. Si el modo Auto frena la herramienta al guardar el archivo, pidele al usuario que pase
+a Manual para este paso y vuelva a Auto despues.
 
 🔴 **La llave es como la contrasena de la cuenta.** No la escribas en ningun mensaje al
 usuario, no la repitas, no la muestres. **No la busques en el trafico de red del
@@ -127,13 +134,19 @@ flujo (paso 10).
 > despues de las otras escrituras, y `mibot verificar` lo vuelve a revisar al final, cuando
 > el usuario ya toco la pantalla.
 
-### Antes de empezar: el saldo `[lo hace el usuario, tu le indicas]`
+### Antes de empezar: el saldo `[lo haces tu]`
 
-Sin saldo el agente no contesta y Botcake no indexa la base de conocimiento. Pidele que
-abra, en Botcake, **Configuracion > Facturacion** (la direccion termina en
-`/settings/billing`) y te diga cuanto sale en la linea **BOTCAKE AI** de la cuenta prepago.
-Si esta en cero o casi, que recargue antes de seguir. Avisale que la recarga automatica
-existe pero no siempre salta: conviene mirar el saldo cada semana.
+Sin saldo el agente no contesta y Botcake no indexa la base de conocimiento. Compruebalo:
+
+```bash
+mibot saldo
+```
+
+Si dice **saldo insuficiente** (menos de 2 USD), que recargue el dueno de la cuenta antes de
+seguir: Botcake > **Configuracion > Cuenta prepago** > **Recargar** (los datos de pago los
+escribe el, nunca tu). Si `mibot` no pudo leer el saldo, que te diga cuanto sale en **Saldo de
+la cuenta** en esa misma pantalla. Avisale que la recarga automatica existe pero no siempre
+salta: conviene mirar el saldo cada semana.
 
 ### Paso 5. Crear el agente vacio `[lo hace el usuario, tu le indicas]`
 

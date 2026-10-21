@@ -67,9 +67,11 @@ Las dos siguen los mismos pasos. En la primera, las preguntas del paso 2 pesan m
 Las lecturas de Botcake pasan por el comando del plugin, desde la carpeta del proyecto del
 usuario. Antes de la primera, `node -v`: si falta Node, o el navegador si no tiene Google
 Chrome, **los instalas tu con su permiso**, como dice
-`../botcake-mi-primer-bot/references/00-requisitos.md`, punto 4. Si la terminal dice que `mibot` no existe, se llama por su ruta:
-`node "<carpeta base de esta skill>/../botcake-mi-primer-bot/scripts/mibot.cjs"`, entre
-comillas. La llave de sesion es la misma de los otros recorridos (`.botcake-sesion`); si no
+`../botcake-mi-primer-bot/references/00-requisitos.md`, punto 4. El comando se llama
+**siempre por su ruta completa**, entre comillas:
+`node "<carpeta base de esta skill>/../botcake-mi-primer-bot/scripts/mibot.cjs"`; el `mibot`
+suelto puede correr el de otro plugin con el mismo nombre (la version pro). En las guias cada
+orden se escribe corta. La llave de sesion es la misma de los otros recorridos (`.botcake-sesion`); si no
 existe, se guarda con los pasos 1 a 4 de la Fase 6 de
 `../botcake-mi-primer-bot/references/06-montaje.md`.
 
@@ -114,8 +116,9 @@ Con `mibot` y el navegador del plugin, sin que el usuario exporte nada:
 - Las secuencias (`botcake.io/<pagina>/sequence`) y las difusiones
   (`botcake.io/<pagina>/broadcast`): leerlas como texto en el navegador del plugin, sin fotos
   de pantalla. Cuantas hay encendidas, cada cuanto mandan y a quien.
-- Si tiene el bot que conversa: lo primero que contesta a un "Hola". Con su permiso (cuesta
-  centavos del saldo de Botcake AI): `mibot preguntar <agente> "Hola"`. Si tiene un mensaje de
+- Si tiene el bot que conversa: lo primero que contesta a un "Hola". Que le escriba "Hola" al
+  bot desde su WhatsApp personal o cualquier otro que tenga a mano (nunca desde el numero del negocio) y que te
+  copie la respuesta, o la lees tu con `mibot respuestas "<su nombre>"`. Si tiene un mensaje de
   bienvenida, que te lo copie.
 
 Con eso revisas los siete puntos de la referencia, cada uno como bien, a mejorar, grave o

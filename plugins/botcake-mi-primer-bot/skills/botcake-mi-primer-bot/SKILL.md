@@ -48,20 +48,20 @@ diselo, pidele que la cambie en Botcake, y sigue con el procedimiento del archiv
 
 Todo lo que se hace sobre la cuenta de Botcake pasa por un solo comando, `mibot`, que
 viene con el plugin y **se corre siempre desde la carpeta del proyecto del usuario** (ahi
-viven `mi-bot.json` y la llave de sesion). Ejemplo:
+viven `mi-bot.json` y la llave de sesion).
 
-```bash
-mibot probar
-```
-
-Si la terminal responde que `mibot` no existe, se llama por su ruta completa: el archivo
-es `scripts/mibot.cjs` dentro de la carpeta base de esta skill (la ruta que aparece como
-*Base directory* cuando la skill se carga). Va entre comillas, porque en Windows las rutas
-suelen tener espacios:
+**Llamalo siempre por su ruta completa, nunca con el `mibot` suelto.** Si el usuario tiene
+instalado otro plugin con un comando del mismo nombre (la version pro, por ejemplo), el
+`mibot` suelto corre el de ese otro plugin. El archivo es `scripts/mibot.cjs` dentro de la
+carpeta base de esta skill (la ruta que aparece como *Base directory* cuando la skill se
+carga). Va entre comillas, porque en Windows las rutas suelen tener espacios:
 
 ```bash
 node "<carpeta base de la skill>/scripts/mibot.cjs" probar
 ```
+
+En las guias cada orden se escribe corta para leer mejor (`mibot probar`); tu la corres
+siempre asi, con la ruta completa.
 
 `mibot` sin nada mas imprime la lista de subcomandos. Funciona igual en Mac y en Windows;
 solo necesita Node.js.
@@ -239,10 +239,10 @@ El bot queda montado y **sin punto de entrada**, o sea apagado.
 
 **Abre:** `references/07-pruebas.md`
 
-Preparas 10 preguntas de prueba sacadas de su propio negocio, no genericas. Primero una
-**prueba rapida** por `mibot` (sin telefono, sin encender nada) para afinar el prompt y la
-base de conocimiento; despues la **prueba real** desde otro telefono, con una palabra clave
-de prueba, para ver el flujo completo: etiquetas, traspaso a persona, apagado. Le ensenas
+Preparas 10 preguntas de prueba sacadas de su propio negocio, no genericas. Se prueban de
+verdad: el usuario le escribe al bot **desde su WhatsApp personal o cualquier otro que tenga a mano**
+(nunca desde el numero del negocio), con una palabra clave de prueba, para ver el flujo
+completo: etiquetas, traspaso a persona, apagado. Le ensenas
 las respuestas del bot, una por una, y las revisan juntos. Lo que este mal se corrige y se
 vuelve a probar.
 
