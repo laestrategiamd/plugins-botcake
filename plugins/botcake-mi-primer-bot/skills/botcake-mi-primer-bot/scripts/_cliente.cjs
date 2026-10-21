@@ -406,6 +406,31 @@ class Botcake {
     return r.customers || r.data || [];
   }
 
+  // Busca por nombre o telefono con el buscador de la pantalla Cliente (campo freetext). Solo
+  // devuelve los que coinciden: nunca se listan clientes que no se buscaron.
+  async buscarClientes(texto, tamano = 10) {
+    const r = await this.post(`customers?page_size=${tamano}&page=1`, [['freetext', texto], ['filter_type', 'and']]);
+    return r.customers || [];
+  }
+
+  // Saldo de la billetera de Botcake AI. No hay llamada de la API que lo de: viene dentro de los
+  // datos con que carga la pantalla Cuenta prepago (/settings/billing), que pide la misma llave.
+  // Devuelve { saldo, recargaAutomatica } o null si no se pudo leer.
+  async saldoIA() {
+    let html;
+    try {
+      const res = await fetch(`https://botcake.io/${this.pageId}/settings/billing`, {
+        headers: { Cookie: `token_jwt=${this.token}` },
+      });
+      html = await res.text();
+    } catch (e) {
+      return null;
+    }
+    const m = html.match(/"botcakeAiWallet"\s*:\s*\{"balance":(-?[0-9.]+)(?:,"config":\{[^}]*?"is_enabled":(true|false))?/);
+    if (!m) return null;
+    return { saldo: Number(m[1]), recargaAutomatica: m[2] === undefined ? null : m[2] === 'true' };
+  }
+
   async clienteInfo(id) {
     return (await this.get(`customers/${id}/info`)).customer_info || null;
   }

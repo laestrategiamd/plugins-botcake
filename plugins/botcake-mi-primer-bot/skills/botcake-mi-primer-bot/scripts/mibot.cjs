@@ -2,10 +2,11 @@
 // El unico comando del plugin. Se corre desde la carpeta del proyecto del usuario
 // (donde viven mi-bot.json y .botcake-sesion).
 //
-//   mibot sesion <llave> [page_id]                guarda la llave de sesion (Fase 6)
+//   mibot sesion --archivo .botcake-llave [page_id]  guarda la llave de sesion sin que pase por el chat (Fase 6)
 //   mibot paginas                                 lista las paginas de la cuenta
 //   mibot pagina <page_id>                        elige la pagina con la que se trabaja
 //   mibot probar                                  comprueba la conexion
+//   mibot saldo                                   saldo de Botcake AI (con menos de 2 USD no se indexa la base)
 //   mibot estado                                  lista etiquetas, campos y agentes
 //   mibot respaldo                                baja los agentes a disco (antes de escribir)
 //   mibot crear-etiqueta "Asesor" "#e74c3c"
@@ -17,7 +18,6 @@
 //   mibot quitar-kb <agente_id> <id_del_archivo_viejo>
 //   mibot ver-agente <agente_id>
 //   mibot ver-conocimiento <agente_id> "frase que tiene que estar"
-//   mibot preguntar <agente_id> "mensaje"         prueba rapida sin navegador (cuesta centavos)
 //   mibot montar [--solo-ver]                     construye el flujo desde mi-bot.json
 //   mibot verificar [--encendido]                 comprueba lo montado (y repara el indice)
 //   mibot palabras
@@ -43,6 +43,10 @@ const { Botcake, key, medir, deSlate, indexado, dormir, SESION } = require('./_c
 const PROY = 'mi-bot.json';
 const TOPE_PROMPT = 15000; // limite del campo Instrucciones de Botcake (documentacion oficial)
 const MARGEN_PROMPT = 14500; // por encima de esto se avisa: casi no queda sitio para ajustes
+// Con 0,62 USD Botcake no indexo la base de conocimiento (ensayo del 8-oct-2026, Instagram). 2 USD es
+// tambien el punto en que salta la recarga automatica por defecto.
+const SALDO_MINIMO = 2;
+const ARCHIVO_LLAVE = '.botcake-llave';
 
 function uso() {
   const lineas = [];
@@ -82,13 +86,26 @@ function guardarProyecto(p, archivo = PROY) {
 }
 
 // ---------------------------------------------------------------- sesion
-function sesion(args) {
-  if (args.length < 1 || args.length > 2) {
-    console.log('Uso: mibot sesion <llave> [page_id]');
+function sesion(args, argv) {
+  // La llave llega en un archivo que escribe el navegador del plugin (06-montaje.md, paso 3), para que
+  // no aparezca en el chat. Se lee, se guarda en .botcake-sesion y el archivo se borra.
+  const archivo = opcion(argv, '--archivo');
+  let llave;
+  if (archivo) {
+    if (!fs.existsSync(archivo)) {
+      console.log(`No encuentro ${archivo}. Repetir el paso 3 de la Fase 6 (leer la llave en el navegador).`);
+      return 1;
+    }
+    llave = fs.readFileSync(archivo, 'utf8');
+    try { fs.unlinkSync(archivo); } catch (e) { /* se intenta borrar igual abajo */ }
+  } else if (args.length === 1 || args.length === 2) {
+    llave = args[0];
+  } else {
+    console.log(`Uso: mibot sesion --archivo ${ARCHIVO_LLAVE} [page_id]`);
     return 1;
   }
-  const llave = args[0].trim().replace(/^[“”"']+|[“”"']+$/g, '');
-  const pageId = (args[1] || '').trim();
+  llave = llave.trim().replace(/^[“”"']+|[“”"']+$/g, '').trim();
+  const pageId = ((archivo ? args[0] : args[1]) || '').trim();
   if (!llave.startsWith('eyJ')) {
     console.log("Esa llave no tiene la forma correcta (deberia empezar por 'eyJ').");
     console.log('Se copio mal, o se copio la clave equivocada. Repetir el paso 3 de la Fase 6.');
@@ -102,7 +119,7 @@ function sesion(args) {
   try { fs.chmodSync(SESION, 0o600); } catch (e) { /* Windows no lo soporta; no pasa nada */ }
   let lineas = [];
   if (fs.existsSync('.gitignore')) lineas = fs.readFileSync('.gitignore', 'utf8').split(/\r?\n/);
-  for (const e of [SESION, PROY, 'respaldos/']) if (!lineas.includes(e)) lineas.push(e);
+  for (const e of [SESION, ARCHIVO_LLAVE, PROY, 'respaldos/']) if (!lineas.includes(e)) lineas.push(e);
   fs.writeFileSync('.gitignore', lineas.filter((l, i, a) => l || i === a.length - 1).join('\n') + '\n');
   console.log(`Sesion guardada en ${SESION} (solo la puede leer tu usuario).`);
   if (pag) console.log(`Pagina: ${pag}`);
@@ -278,7 +295,32 @@ async function quitarKb(bc, id, archivoId) {
   return 0;
 }
 
+async function saldo(bc) {
+  const s = await bc.saldoIA();
+  if (!s) {
+    console.log('No pude leer el saldo. Que lo mire el usuario en Botcake > Configuracion > Cuenta prepago > Saldo de la cuenta.');
+    return 1;
+  }
+  console.log(`Saldo de Botcake AI: ${s.saldo.toFixed(2)} USD. Recarga automatica: ${s.recargaAutomatica === null ? 'no se sabe' : s.recargaAutomatica ? 'encendida' : 'apagada'}.`);
+  if (s.saldo < SALDO_MINIMO) {
+    console.log(`>>> Saldo insuficiente: con menos de ${SALDO_MINIMO} USD Botcake no indexa la base de conocimiento y el bot no contesta.`);
+    console.log('    Que recargue el dueno de la cuenta: Botcake > Configuracion > Cuenta prepago > Recargar.');
+    if (s.recargaAutomatica) console.log('    La recarga automatica esta encendida, pero no siempre salta: no hay que esperarla.');
+    return 1;
+  }
+  return 0;
+}
+
 async function subirKb(bc, id, ruta, frase) {
+  // Sin saldo el archivo se sube pero nunca se indexa, y volver a subirlo da "File already exists".
+  const s = await bc.saldoIA();
+  if (s && s.saldo < SALDO_MINIMO) {
+    console.log(`>>> No subo la base: el saldo de Botcake AI es ${s.saldo.toFixed(2)} USD, insuficiente.`);
+    console.log(`    Con menos de ${SALDO_MINIMO} USD Botcake no la indexa y el bot no la lee. Que recargue el dueno`);
+    console.log('    de la cuenta (Botcake > Configuracion > Cuenta prepago > Recargar) y repite este paso.');
+    return 1;
+  }
+  if (!s) console.log('(No pude leer el saldo de Botcake AI. Si el archivo no se indexa, mira el saldo primero.)');
   let f;
   try {
     f = await bc.adjuntarKb(id, ruta);
@@ -372,18 +414,13 @@ async function preguntar(bc, id, mensaje) {
 async function respuestas(bc, buscar) {
   const p = fs.existsSync(PROY) ? cargarProyecto() : {};
   const nombres = new Map((await bc.campos()).map((c) => [String(c.id), c.name]));
-  const lista = await bc.clientes(1, 20);
-  if (!lista.length) {
-    console.log('No hay clientes recientes en esta pagina (o el endpoint devolvio vacio).');
-    return 1;
-  }
-  const q = (buscar || '').toLowerCase().replace(/\s+/g, '');
-  const cand = q
-    ? lista.filter((c) => `${c.full_name || ''}${c.phone_number || ''}${c.name || ''}`.toLowerCase().replace(/\s+/g, '').includes(q))
-    : lista.slice(0, 3);
+  // Con nombre o telefono se usa el buscador de Botcake, que solo devuelve a quien coincide: nunca
+  // se imprimen otros clientes reales (ensayo del 8-oct-2026: salian 20 nombres al no encontrar).
+  const cand = (buscar || '').trim() ? await bc.buscarClientes(buscar.trim(), 5) : (await bc.clientes(1, 3));
   if (!cand.length) {
-    console.log(`No encontre a nadie que coincida con "${buscar}" entre los ultimos 20 clientes:`);
-    for (const c of lista) console.log(`  - ${c.full_name || c.name || '?'} ${c.phone_number || ''} (id ${c.id})`);
+    console.log(buscar
+      ? `No encontre a nadie con "${buscar}". Revisa como esta escrito el nombre, o prueba con el telefono.`
+      : 'No hay clientes recientes en esta pagina.');
     return 1;
   }
   for (const c of cand) {
@@ -1143,7 +1180,7 @@ async function main() {
   const cmd = argv[0];
   const args = sinOpciones(argv.slice(1));
 
-  if (cmd === 'sesion') return sesion(args);
+  if (cmd === 'sesion') return sesion(args, argv);
   if (cmd === 'paginas') return paginas();
   if (cmd === 'pagina') return pagina(args);
   if (cmd === 'medir') return args[0] ? medirArchivo(args[0]) : uso();
@@ -1154,6 +1191,7 @@ async function main() {
   const bc = new Botcake();
   switch (cmd) {
     case 'probar': return probar(bc);
+    case 'saldo': return saldo(bc);
     case 'estado': return estado(bc);
     case 'respaldo': {
       const r = await bc.respaldo();
