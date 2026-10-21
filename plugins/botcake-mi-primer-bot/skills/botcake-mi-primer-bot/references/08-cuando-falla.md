@@ -52,7 +52,8 @@ Una de dos:
 
 1. **La llave caduco.** Se repiten los pasos 2 y 3 de la Fase 6 (el usuario comprueba que
    sigue con la sesion iniciada en el navegador; si se cerro, entra otra vez; tu vuelves a
-   leer la cookie y corres `mibot sesion`).
+   guardar la llave como en el paso 3: directo a `.botcake-llave` y
+   `mibot sesion --archivo .botcake-llave`).
 2. **Se copio la clave equivocada.** La "Api key" que enseña el panel de la pagina en
    Botcake NO sirve para esto; la que sirve es la cookie `token_jwt` del navegador. Las dos
    empiezan por `eyJ`, asi que la forma no delata el error: solo lo delata este codigo 102.

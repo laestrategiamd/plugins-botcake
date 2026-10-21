@@ -149,7 +149,7 @@ function pagina(args) {
   if (args.length !== 1) { console.log('Uso: mibot pagina <identificador>'); return 1; }
   let d;
   try { d = JSON.parse(fs.readFileSync(SESION, 'utf8')); } catch (e) {
-    console.log('Primero hay que guardar la llave: mibot sesion "<llave>"');
+    console.log(`Primero hay que guardar la llave: mibot sesion --archivo ${ARCHIVO_LLAVE} (Fase 6, paso 3)`);
     return 1;
   }
   d.page_id = args[0].trim();

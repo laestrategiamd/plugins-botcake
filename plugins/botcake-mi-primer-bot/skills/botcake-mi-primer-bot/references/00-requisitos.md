@@ -51,10 +51,12 @@ configuracion**: no deja escribir el prompt, ni subir archivos, ni elegir el mod
 *Instruccion*, *Herramientas*, *Conocimiento* y *Comportamiento*, esta conectada. Si ve el
 aviso de conectar la billetera, no lo esta.
 
-**Y el saldo.** Conectada no quiere decir con saldo. En Botcake > **Configuracion >
-Facturacion** (la direccion termina en `/settings/billing`) sale la cuenta prepago con una
-linea **BOTCAKE AI**. Si esta en cero, el bot no contesta y la base de conocimiento no se
-indexa, sin ningun aviso. Si esta en cero o casi, que recargue antes de seguir. La recarga
+**Y el saldo.** Conectada no quiere decir con saldo. En Botcake > **Configuracion > Cuenta
+prepago** (la direccion termina en `/settings/billing`) sale el **Saldo de la cuenta**. Con
+menos de 2 USD la base de conocimiento no se indexa y el bot no contesta, sin ningun aviso
+de Botcake. Si tiene menos de 2 USD, que recargue (boton **Recargar**) antes de seguir.
+Cuando ya este guardada la llave de sesion (Fase 6), `mibot saldo` lo comprueba, y
+`mibot subir-kb` no sube nada con menos de eso. La recarga
 automatica existe, pero no siempre salta: hay que mirarla cada semana.
 
 **Si no lo esta:** lo tiene que conectar **el dueno de la cuenta**, porque es un tema de
@@ -136,15 +138,14 @@ usuario lo menciona, es eso; no rompe nada y desaparece cuando Node esta instala
 **En Windows no hace falta Git:** sin Git, Claude Code usa PowerShell, y el plugin trae
 `mibot.cmd` para PowerShell.
 
-Despues comprueba tu que el comando del plugin responde:
+Despues comprueba tu que el comando del plugin responde, siempre por su ruta completa
+(seccion "El comando mibot" de `SKILL.md`):
 
 ```bash
-mibot
+node "<carpeta base de la skill>/scripts/mibot.cjs"
 ```
 
-Tiene que imprimir la lista de subcomandos. Si dice que `mibot` no existe, usa la ruta
-completa que explica `SKILL.md` (seccion "El comando mibot") y anota en `mi-bot.json`
-(`requisitos.mibot`) cual de las dos formas funciono, para no volver a probar.
+Tiene que imprimir la lista de subcomandos.
 
 ### 5. Una carpeta para el proyecto
 

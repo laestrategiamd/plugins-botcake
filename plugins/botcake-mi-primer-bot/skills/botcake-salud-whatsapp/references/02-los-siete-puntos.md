@@ -12,9 +12,9 @@ dice asi en el diagnostico ("segun lo que me contaste...").
 **Que mirar:** la respuesta a un "Hola": largo, precios, enlaces de pago, metodos de pago,
 pedir fotos o datos de entrada, varios enlaces, un muro de texto.
 
-**Como se revisa:** si tiene el bot que conversa, `mibot preguntar <agente> "Hola"` (con su
-permiso; cuesta centavos). Si tiene un mensaje de bienvenida, que te lo copie. Cuenta las
-palabras.
+**Como se revisa:** si tiene el bot que conversa, que le escriba "Hola" al bot desde su WhatsApp personal o cualquier otro que tenga a mano (nunca desde el numero del negocio); la respuesta la lees con
+`mibot respuestas "<su nombre>"` o que te la copie. Si tiene un mensaje de bienvenida, que te lo
+copie. Cuenta las palabras.
 
 | | Bien | A mejorar | Grave |
 |---|---|---|---|
@@ -145,8 +145,9 @@ dificiles.
 **Que mirar:** si pregunta de una en una o todo junto, si responde distinto segun lo que le
 dicen, si pasa a una persona cuando no sabe.
 
-**Como se revisa:** si tiene el bot que conversa, dos o tres preguntas de prueba con
-`mibot preguntar` (con su permiso). Si tiene otro bot, que te describa como responde.
+**Como se revisa:** si tiene el bot que conversa, dos o tres preguntas de prueba que le
+escribe al bot desde su WhatsApp personal o cualquier otro que tenga a mano (las lees con `mibot respuestas`). Si tiene
+otro bot, que te describa como responde.
 
 | | Nivel |
 |---|---|

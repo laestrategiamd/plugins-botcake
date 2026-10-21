@@ -63,9 +63,10 @@ afectan la calificacion del numero de WhatsApp ante Meta.
 ## El comando `mibot`
 
 Lo que se hace sobre la cuenta pasa por el mismo comando del plugin, `mibot`, **desde la
-carpeta del proyecto del usuario**. Si la terminal dice que `mibot` no existe, se llama por
-su ruta: `node "<carpeta base de esta skill>/../botcake-mi-primer-bot/scripts/mibot.cjs"`,
-entre comillas.
+carpeta del proyecto del usuario**, y **siempre por su ruta completa**, entre comillas:
+`node "<carpeta base de esta skill>/../botcake-mi-primer-bot/scripts/mibot.cjs"`. El `mibot`
+suelto puede correr el de otro plugin con el mismo nombre (la version pro). En las guias
+cada orden se escribe corta (`mibot plantillas`); tu la corres con la ruta completa.
 
 La llave de sesion es la misma del bot que conversa (`.botcake-sesion`). Si el usuario ya
 hizo ese recorrido en esta carpeta, sirve; si no, se guarda con los pasos 1 a 4 de la
